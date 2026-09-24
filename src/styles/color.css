@@ -1,0 +1,71 @@
+/* ==========================================================================
+   COLORS.CSS - Harmonious Color Palette System
+   ========================================================================== */
+
+:root {
+  /* 1. PRIMARY PALETTE - Amarelo Âmbar / Mel Suave */
+  --color-primary-50:  #FDFBF2; /* Creme Suave */
+  --color-primary-100: #F9F2D8; /* Manteiga Clara */
+  --color-primary-200: #F3E3B1; /* Amarelo Creme */
+  --color-primary-300: #E9CF80; /* Mel Suave */
+  --color-primary-400: #DEBA53; /* Dourado Âmbar */
+  --color-primary-500: #D3A22B; /* PRINCIPAL: Âmbar Elegante e Quente */
+  --color-primary-600: #B1821F; /* Ocre Médio */
+  --color-primary-700: #886118; /* Dourado Fechado */
+  --color-primary-800: #624413; /* Castanho Quente */
+  --color-primary-900: #3E2B0C; /* Café Escuro */
+
+  /* 2. SECONDARY PALETTE - Azul Índigo/Grafite (Contraste Complementar) */
+  --color-secondary-50:  #F0F4F8;
+  --color-secondary-300: #9FB3C8;
+  --color-secondary-500: #334E68; /* Azul Escuro Equilibrado */
+  --color-secondary-700: #102A43; /* Índigo Profundo */
+  --color-secondary-900: #050E17;
+
+  /* 3. ACCENT PALETTE - Terracota / Coral Quente */
+  --color-accent-100: #FCE8E2;
+  --color-accent-500: #D96B43; /* Destaque / CTA */
+  --color-accent-700: #A3411F;
+
+  /* 4. NEUTRAL PALETTE - Fundos e Textos Quentes */
+  --color-bg-main:       #FAF8F5; /* Fundo Geral Creme Suave */
+  --color-bg-surface:    #FFFFFF; /* Superfície de Cards */
+  --color-bg-subtle:     #F3EFEA; /* Fundo Secundário */
+  --color-bg-muted:      #E8E2D8;
+
+  --color-text-main:     #2B2823; /* Grafite Quente (Substitui o preto puro) */
+  --color-text-muted:    #656057; /* Texto secundário */
+  --color-text-subtle:   #8E877E; /* Captions e detalhes */
+  --color-text-inverse:  #FFFFFF;
+
+  --color-border:        #E5DFD5; /* Bordas suaves */
+  --color-border-strong: #C8BFB2;
+
+  /* 5. STATUS / FEEDBACK */
+  --color-success-bg:   #EEF6F0;
+  --color-success-main: #4A8C5D;
+  --color-warning-bg:   #FFF6E5;
+  --color-warning-main: #E08B18;
+  --color-error-bg:     #FDF2F2;
+  --color-error-main:   #C94A4A;
+  --color-info-bg:      #F0F7FF;
+  --color-info-main:    #3B7BBF;
+
+  /* 6. SHADOWS */
+  --shadow-sm: 0 1px 2px rgba(43, 40, 35, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(43, 40, 35, 0.08);
+  --shadow-amber: 0 4px 14px 0 rgba(211, 162, 43, 0.35);
+}
+
+/* Suporte Automático a Dark Mode */
+@media (prefers-color-scheme: dark) {
+  :root[data-theme="auto"] {
+    --color-bg-main:       #181614;
+    --color-bg-surface:    #22201C;
+    --color-bg-subtle:     #2D2A25;
+    --color-text-main:     #F4EFEA;
+    --color-text-muted:    #B8B0A5;
+    --color-border:        #3A3630;
+    --color-primary-500:   #E2B23B;
+  }
+}

@@ -1,0 +1,51 @@
+<app-header-operadora></app-header-operadora>
+
+<main class="dashboard-main">
+    <div class="dashboard-container">
+
+        <h2>Dashboard</h2>
+
+        <!-- Stats -->
+        <section class="stats-grid">
+            <div class="stat-card">
+                <span class="stat-label">Cartões disponíveis</span>
+                <span class="stat-value">{{ stats.cartoesDisponiveis }}</span>
+            </div>
+
+            <div class="stat-card">
+                <span class="stat-label">Cartões vinculados</span>
+                <span class="stat-value">{{ stats.cartoesVinculados }}</span>
+            </div>
+
+            <div class="stat-card">
+                <span class="stat-label">Pedidos pendentes</span>
+                <span class="stat-value">{{ stats.pedidosPendentes }}</span>
+            </div>
+
+            <div class="stat-card stat-card-alert">
+                <span class="stat-label">Bloqueios pendentes</span>
+                <span class="stat-value">{{ stats.bloqueiosPendentes }}</span>
+            </div>
+        </section>
+
+        <!-- Atalhos -->
+        <section class="atalhos">
+            <h3>Ações rápidas</h3>
+            <div class="atalhos-grid">
+                <a routerLink="/operadora/cartoes" class="atalho-card">
+                    <span class="atalho-icon">💳</span>
+                    <span class="atalho-label">Gerenciar Cartões</span>
+                </a>
+                <a routerLink="/operadora/pedidos" class="atalho-card">
+                    <span class="atalho-icon">📋</span>
+                    <span class="atalho-label">Ver Pedidos</span>
+                </a>
+                <a routerLink="/operadora/perfil" class="atalho-card">
+                    <span class="atalho-icon">🏢</span>
+                    <span class="atalho-label">Perfil da Empresa</span>
+                </a>
+            </div>
+        </section>
+
+    </div>
+</main>

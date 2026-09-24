@@ -1,0 +1,117 @@
+:host {
+    display: block;
+    min-height: 100vh;
+    background-color: var(--color-bg-main);
+}
+
+.dashboard-main {
+    padding: 40px 20px;
+}
+
+.dashboard-container {
+    max-width: 900px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+h2 {
+    font-size: var(--fs-2xl);
+    font-weight: var(--fw-bold);
+    color: var(--color-text-main);
+    margin: 0;
+}
+
+h3 {
+    font-size: var(--fs-lg);
+    font-weight: var(--fw-semibold);
+    color: var(--color-text-main);
+    margin: 0 0 1rem 0;
+}
+
+/* Stats */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+}
+
+.stat-card {
+    background-color: var(--color-bg-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    box-shadow: var(--shadow-sm);
+}
+
+.stat-card-alert {
+    border-color: var(--color-warning-main);
+}
+
+.stat-label {
+    font-size: var(--fs-xs);
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: var(--ls-wide);
+    font-weight: var(--fw-semibold);
+}
+
+.stat-value {
+    font-size: var(--fs-2xl);
+    font-weight: var(--fw-bold);
+    color: var(--color-primary-600);
+}
+
+/* Atalhos */
+.atalhos {
+    display: flex;
+    flex-direction: column;
+}
+
+.atalhos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.atalho-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 1.25rem 1.5rem;
+    background-color: var(--color-bg-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    text-decoration: none;
+    color: var(--color-text-main);
+    font-weight: var(--fw-semibold);
+    font-size: var(--fs-sm);
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.atalho-card:hover {
+    transform: translateY(-3px);
+    border-color: var(--color-primary-500);
+    box-shadow: var(--shadow-md);
+}
+
+.atalho-icon {
+    font-size: 1.6rem;
+}
+
+@media (max-width: 640px) {
+    .dashboard-main {
+        padding: 20px 12px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .atalho-card {
+        transition: none;
+    }
+}

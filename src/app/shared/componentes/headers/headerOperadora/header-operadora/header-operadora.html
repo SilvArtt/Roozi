@@ -1,0 +1,28 @@
+<header>
+    <div class="header-container">
+        <a class="logo" routerLink="/operadora/dashboard" aria-label="Roozi - Operadora">
+            <img src="/assets/img/base/logo.png" alt="Logo da Roozi">
+            <p>Roozi</p>
+        </a>
+
+        <input type="checkbox" id="menu-toggle" class="menu-toggle-checkbox">
+        <label for="menu-toggle" class="hamburger-btn" aria-label="Abrir Menu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </label>
+
+        <nav class="nav-menu">
+            <ul class="nav-list">
+                <li><a routerLink="/operadora/dashboard">Dashboard</a></li>
+                <li class="nav-divider"></li>
+                <li><a routerLink="/operadora/cartoes">Meus Cartões</a></li>
+                <li><a routerLink="/operadora/pedidos">Pedidos</a></li>
+                <li class="nav-divider"></li>
+                <li><a routerLink="/operadora/perfil">Perfil da Empresa</a></li>
+                <li class="nav-divider"></li>
+                <li><a (click)="onLogout()" class="btn-logout">Sair</a></li>
+            </ul>
+        </nav>
+    </div>
+</header>

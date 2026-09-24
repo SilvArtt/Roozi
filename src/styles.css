@@ -1,1 +1,13 @@
-/* You can add global styles to this file, and also import other style files */
+/* src/styles.css */
+@import url('https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700;800&family=Source+Code+Pro:wght@400;600&display=swap');
+
+@import './styles/reset.css';
+@import './styles/font-specs.css';
+@import './styles/color.css';
+
+/* Seus estilos globais podem vir aqui */
+body {
+    background-color: var(--color-bg-main);
+    color: var(--color-text-main);
+    font-family: var(--font-sans);
+}

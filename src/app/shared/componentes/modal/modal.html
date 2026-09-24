@@ -1,0 +1,12 @@
+<div class="modal-overlay active">
+    <div class="modal-content">
+        <div class="modal-header">
+            <ng-content select="[modalTitle]"></ng-content>
+            <button type="button" class="close-modal" aria-label="Fechar modal">&times;</button>
+        </div>
+
+        <ng-content select="[modalBody]"></ng-content>
+
+        <ng-content select="[modalFooter]"></ng-content>
+    </div>
+</div>

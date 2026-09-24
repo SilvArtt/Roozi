@@ -1,0 +1,165 @@
+:host{
+    display: block;
+}
+
+.card-item {
+    position: relative;
+    width: 320px;
+    min-height: 190px;
+    padding: 20px;
+    border-radius: 16px;
+    background: linear-gradient(135deg,
+            var(--color-primary-500) 0%,
+            var(--color-primary-700) 100%);
+    color: var(--color-primary-50);
+    box-shadow: var(--shadow-md);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 12px;
+    overflow: hidden;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.card-item::before {
+    content: "ROOZI PASS";
+    position: absolute;
+    bottom: 12px;
+    right: 16px;
+    font-size: 1.2rem;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    opacity: 0.12;
+    color: #FFFFFF;
+    pointer-events: none;
+}
+
+.card-item:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-amber);
+}
+
+.card-item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    opacity: 0.9;
+}
+
+.card-item-type {
+    padding: 4px 10px;
+    background-color: rgba(255, 255, 255, 0.18);
+    border-radius: 6px;
+}
+
+.card-item-operator {
+    font-size: 0.7rem;
+    opacity: 0.85;
+}
+
+.card-item-body {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.card-item-nickname {
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+.card-item-number {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    letter-spacing: 0.08em;
+    opacity: 0.85;
+    margin: 0;
+}
+
+.card-item-balance {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding-top: 10px;
+    border-top: 1px dashed rgba(255, 255, 255, 0.25);
+}
+
+.balance-label {
+    font-size: 0.75rem;
+    opacity: 0.85;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.balance-value {
+    font-size: 1.1rem;
+    font-weight: 800;
+}
+
+.card-item-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 4px;
+}
+
+.btn-card-action {
+    flex: 1;
+    padding: 9px 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 8px;
+    cursor: pointer;
+    border: none;
+    transition: background-color 0.2s ease, transform 0.15s ease;
+}
+
+.btn-recharge {
+    background-color: var(--color-primary-900);
+    color: var(--color-primary-50);
+}
+
+.btn-recharge:hover {
+    background-color: var(--color-secondary-900);
+    transform: translateY(-1px);
+}
+
+.btn-recharge:focus-visible {
+    outline: 2px solid #FFFFFF;
+    outline-offset: 2px;
+}
+
+.btn-details {
+    background-color: rgba(255, 255, 255, 0.15);
+    color: #FFFFFF;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.btn-details:hover {
+    background-color: rgba(255, 255, 255, 0.25);
+}
+
+.btn-details:focus-visible {
+    outline: 2px solid #FFFFFF;
+    outline-offset: 2px;
+}
+
+@media (max-width: 640px) {
+    .card-item {
+        width: 100%;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .card-item,
+    .btn-card-action {
+        transition: none;
+    }
+}

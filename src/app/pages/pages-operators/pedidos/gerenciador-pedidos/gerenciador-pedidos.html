@@ -1,0 +1,127 @@
+<app-header-operadora></app-header-operadora>
+
+<main class="pedidos-main">
+    <div class="pedidos-container">
+
+        <h2>Pedidos</h2>
+
+        <!-- Abas -->
+        <div class="tabs">
+            <button type="button" class="tab" [class.active]="abaAtiva === 'cartao'" (click)="mudarAba('cartao')">
+                Pedidos de Cartão
+            </button>
+            <button type="button" class="tab" [class.active]="abaAtiva === 'bloqueio'" (click)="mudarAba('bloqueio')">
+                Pedidos de Bloqueio
+            </button>
+        </div>
+
+        <!-- Feedback -->
+        @if (erro) {
+        <div class="alert alert-error">{{ erro }}</div>
+        }
+        @if (sucesso) {
+        <div class="alert alert-success">{{ sucesso }}</div>
+        }
+
+        <!-- ABA 1: PEDIDOS DE CARTÃO -->
+        @if (abaAtiva === 'cartao') {
+        <section class="tab-content">
+            <p class="resumo">
+                Total: <strong>{{ pedidosCartao.length }}</strong> pedidos
+                • Pendentes: <strong>{{ totalPendentesCartao }}</strong>
+            </p>
+
+            @if (pedidosCartao.length === 0) {
+            <p class="empty">Nenhum pedido de cartão no momento.</p>
+            } @else {
+            <div class="lista">
+                @for (pedido of pedidosCartao; track pedido.id) {
+                <div class="pedido-item">
+                    <div class="pedido-info">
+                        <p class="pedido-titulo">
+                            {{ pedido.user_id | slice:0:8 }}...
+                        </p>
+                        <p class="pedido-meta">
+                            Região: {{ pedido.area_id }} •
+                            Tipo: {{ pedido.card_type }} •
+                            Categoria: {{ pedido.passenger_category }}
+                        </p>
+                        <p class="pedido-meta">
+                            Entrega: {{ formatarEntrega(pedido) }}
+                        </p>
+                        <p class="pedido-status" [attr.data-status]="pedido.status">
+                            {{ formatarStatusCartao(pedido.status) }}
+                        </p>
+                    </div>
+
+                    <div class="pedido-acoes">
+                        <button type="button" class="btn-acao btn-detalhes" (click)="verDetalhesCartao(pedido)">
+                            Ver detalhes
+                        </button>
+                        @if (pedido.status === 'pending_payment' || pedido.status === 'processing') {
+                        <button type="button" class="btn-acao btn-aprovar" (click)="aprovarCartao(pedido)">
+                            Aprovar
+                        </button>
+                        <button type="button" class="btn-acao btn-rejeitar" (click)="rejeitarCartao(pedido)">
+                            Rejeitar
+                        </button>
+                        }
+                    </div>
+                </div>
+                }
+            </div>
+            }
+        </section>
+        }
+
+        <!-- ABA 2: PEDIDOS DE BLOQUEIO -->
+        @if (abaAtiva === 'bloqueio') {
+        <section class="tab-content">
+            <p class="resumo">
+                Total: <strong>{{ pedidosBloqueio.length }}</strong> pedidos
+                • Pendentes: <strong>{{ totalPendentesBloqueio }}</strong>
+            </p>
+
+            @if (pedidosBloqueio.length === 0) {
+            <p class="empty">Nenhum pedido de bloqueio no momento.</p>
+            } @else {
+            <div class="lista">
+                @for (pedido of pedidosBloqueio; track pedido.id) {
+                <div class="pedido-item">
+                    <div class="pedido-info">
+                        <p class="pedido-titulo">
+                            Cartão: •••• {{ pedido.card_id | slice:-4 }}
+                        </p>
+                        <p class="pedido-meta">
+                            Titular: {{ pedido.holder_name }}
+                        </p>
+                        <p class="pedido-meta">
+                            Motivo: {{ formatarMotivo(pedido.reason) }}
+                        </p>
+                        <p class="pedido-status" [attr.data-status]="pedido.status">
+                            {{ formatarStatusBloqueio(pedido.status) }}
+                        </p>
+                    </div>
+
+                    <div class="pedido-acoes">
+                        <button type="button" class="btn-acao btn-detalhes" (click)="verDetalhesBloqueio(pedido)">
+                            Ver detalhes
+                        </button>
+                        @if (pedido.status === 'pending') {
+                        <button type="button" class="btn-acao btn-aprovar" (click)="aprovarBloqueio(pedido)">
+                            Aprovar
+                        </button>
+                        <button type="button" class="btn-acao btn-rejeitar" (click)="rejeitarBloqueio(pedido)">
+                            Rejeitar
+                        </button>
+                        }
+                    </div>
+                </div>
+                }
+            </div>
+            }
+        </section>
+        }
+
+    </div>
+</main>

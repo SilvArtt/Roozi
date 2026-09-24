@@ -1,0 +1,268 @@
+/* ==========================================================================
+   INDEX.CSS - Home
+   ========================================================================== */
+
+:host {
+    display: block;
+    background-color: var(--color-bg-main);
+    overflow-x: hidden;
+}
+
+/* 1. HERO */
+.hero {
+    background-image: url('/assets/img/index/hero-bg.svg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.greetings-container {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: clamp(3rem, 10vw, 7rem) 1.25rem clamp(2.5rem, 8vw, 5rem);
+    text-align: center;
+}
+
+.greetings-container h1 {
+    font-size: 3.3rem;
+    font-weight: var(--fw-extrabold);
+    letter-spacing: var(--ls-tight);
+    color: var(--color-text-main);
+}
+
+.greetings-container p {
+    font-size: var(--fs-lg);
+    font-weight: var(--fw-light);
+    color: var(--color-text-muted);
+    margin-bottom: 0;
+}
+
+/* 2. SEÇÕES */
+main section {
+    padding: clamp(2.5rem, 6vw, 5rem) clamp(1.25rem, 5vw, 4rem);
+}
+
+.obj-container > h2,
+.met-container > h2 {
+    text-align: center;
+    margin-bottom: 2.5rem;
+}
+
+/* 3. SOBRE */
+.abt-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    column-gap: clamp(1.5rem, 3vw, 2.5rem);
+    row-gap: 1.5rem;
+}
+
+.abt-container > h2 {
+    flex: 1 1 100%;
+    margin-bottom: 1.5rem;
+}
+
+.abt-img-container {
+    flex: 0 0 260px;
+    max-width: 260px;
+}
+
+.abt-p-container {
+    flex: 1 1 320px;
+}
+
+.img-card {
+    width: 100%;
+    padding: 1.75rem;
+    background-color: var(--color-bg-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 16px;
+    box-shadow: var(--shadow-md);
+}
+
+.img-card img {
+    width: 100%;
+}
+
+.p-card {
+    padding: 2rem clamp(1.5rem, 3vw, 2.5rem);
+    background-color: var(--color-bg-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 16px;
+    box-shadow: var(--shadow-md);
+}
+
+.p-card p {
+    font-size: var(--fs-lg);
+    font-weight: var(--fw-light);
+    color: var(--color-text-muted);
+    margin-bottom: 0;
+}
+
+/* 4. OBJETIVOS */
+.obj-container {
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.obj-container .card {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.75rem;
+}
+
+.obj-container .card-block {
+    padding: 2.25rem 1.75rem;
+    background-color: var(--color-bg-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 16px;
+    box-shadow: var(--shadow-md);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.obj-container .card-block:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-amber);
+    border-color: var(--color-primary-300);
+}
+
+.obj-container .card-block h3 {
+    color: var(--color-primary-600);
+    margin-bottom: 0.6rem;
+}
+
+.obj-container .card-block p {
+    font-size: var(--fs-sm);
+    color: var(--color-text-muted);
+    margin-bottom: 0;
+}
+
+/* 5. METODOLOGIA */
+section#met {
+    background-color: var(--color-secondary-700);
+}
+
+.met-container {
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.met-container > h2 {
+    color: var(--color-text-inverse);
+}
+
+.met-container .card {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 380px));
+    justify-content: center;
+    gap: 1.75rem;
+    counter-reset: passo;
+}
+
+.met-container .card-block {
+    position: relative;
+    padding: 2.5rem 1.75rem 2rem;
+    background-color: var(--color-secondary-500);
+    border: 1px solid var(--color-secondary-300);
+    border-radius: 16px;
+    box-shadow: 0 8px 20px rgba(5, 14, 23, 0.35);
+    transition: transform 0.2s ease, border-color 0.2s ease;
+    counter-increment: passo;
+}
+
+.met-container .card-block::before {
+    content: counter(passo);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    margin-bottom: 1rem;
+    border-radius: 50%;
+    background-color: var(--color-primary-500);
+    color: var(--color-secondary-900);
+    font-family: var(--font-heading);
+    font-weight: var(--fw-bold);
+    font-size: var(--fs-sm);
+}
+
+.met-container .card-block:hover {
+    transform: translateY(-4px);
+    border-color: var(--color-primary-400);
+}
+
+.met-container .card-block h3 {
+    color: var(--color-primary-300);
+    margin-bottom: 0.6rem;
+}
+
+.met-container .card-block p {
+    font-size: var(--fs-sm);
+    color: var(--color-secondary-50);
+    margin-bottom: 0;
+}
+
+/* 6. RESPONSIVO */
+@media (max-width: 900px) {
+    .obj-container .card {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .met-container .card {
+        grid-template-columns: repeat(2, minmax(0, 320px));
+    }
+}
+
+@media (max-width: 760px) {
+    .abt-container {
+        flex-direction: column;
+    }
+    .abt-img-container {
+        max-width: 220px;
+    }
+    .abt-container > h2 {
+        text-align: center;
+    }
+}
+
+@media (max-width: 700px) {
+    .met-container .card {
+        grid-template-columns: 1fr;
+        max-width: 420px;
+        margin: 0 auto;
+    }
+    .met-container .card-block {
+        padding: 2rem 1.5rem 1.5rem;
+    }
+}
+
+@media (max-width: 600px) {
+    .obj-container .card {
+        grid-template-columns: 1fr;
+    }
+    .obj-container .card-block {
+        padding: 1.75rem 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .p-card,
+    .img-card {
+        padding: 1.25rem;
+    }
+    .abt-img-container {
+        max-width: 160px;
+    }
+    .obj-container > h2,
+    .met-container > h2 {
+        margin-bottom: 1.75rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .obj-container .card-block,
+    .met-container .card-block {
+        transition: none;
+    }
+}

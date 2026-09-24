@@ -1,0 +1,30 @@
+<div class="card-item">
+    <div class="card-item-header">
+        <span class="card-item-type">
+            <ng-content select="[type-label]"></ng-content>
+        </span>
+        <span class="card-item-operator">
+            <ng-content select="[operator-name]"></ng-content>
+        </span>
+    </div>
+
+    <div class="card-item-body">
+        <p class="card-item-nickname">
+            <ng-content select="[nickname]"></ng-content>
+        </p>
+        <p class="card-item-number">
+            <ng-content select="[masked-number]"></ng-content>
+        </p>
+    </div>
+
+    <div class="card-item-balance">
+        <span class="balance-label">Saldo disponível</span>
+        <span class="balance-value">
+            <ng-content select="[balance]"></ng-content>
+        </span>
+    </div>
+
+    <div class="card-item-actions">
+        <ng-content select="[actions]"></ng-content>
+    </div>
+</div>

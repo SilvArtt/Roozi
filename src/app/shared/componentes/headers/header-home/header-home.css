@@ -1,0 +1,421 @@
+/* ==========================================================================
+
+   HEADER-HOME.CSS - Header da página inicial (landing)
+
+   ========================================================================== */
+
+
+
+header {
+
+    position: sticky;
+
+    top: 0;
+
+    z-index: 100;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    flex-wrap: wrap;
+
+    gap: 1rem 1.5rem;
+
+    padding: 1rem clamp(1.25rem, 4vw, 4rem);
+
+    background-color: var(--color-bg-surface);
+
+    border-bottom: 1px solid var(--color-border);
+
+}
+
+
+
+/* Logo */
+
+.logo {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 0.6rem;
+
+    text-decoration: none;
+
+    color: inherit;
+
+}
+
+
+
+.logo img {
+
+    width: 36px;
+
+    height: 36px;
+
+    flex-shrink: 0;
+
+}
+
+
+
+.logo p {
+
+    margin: 0;
+
+    font-family: var(--font-heading);
+
+    font-size: var(--fs-lg);
+
+    font-weight: var(--fw-bold);
+
+    color: var(--color-text-main);
+
+}
+
+
+
+/* Nav com âncoras */
+
+nav ul {
+
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 0.5rem clamp(1rem, 2.5vw, 2.5rem);
+
+    list-style: none;
+
+    margin: 0;
+
+    padding: 0;
+
+}
+
+
+
+nav a {
+
+    text-decoration: none;
+
+}
+
+
+
+nav li {
+
+    font-size: var(--fs-sm);
+
+    font-weight: var(--fw-medium);
+
+    color: var(--color-text-muted);
+
+    cursor: pointer;
+
+    transition: color 0.2s ease;
+
+}
+
+
+
+nav li:hover {
+
+    color: var(--color-primary-600);
+
+}
+
+
+
+/* Botão CTA */
+
+.btn a {
+
+    padding: 0.7rem 1.5rem;
+
+    background-color: var(--color-primary-500);
+
+    color: var(--color-text-inverse);
+
+    border-radius: 8px;
+
+    box-shadow: var(--shadow-sm);
+
+    transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+
+    text-decoration: none;
+
+    white-space: nowrap;
+
+}
+
+
+
+.btn a:hover {
+
+    background-color: var(--color-primary-600);
+
+    box-shadow: var(--shadow-amber);
+
+    transform: translateY(-1px);
+
+}
+
+
+
+.btn a:focus-visible,
+
+nav li:focus-visible {
+
+    outline: 2px solid var(--color-primary-500);
+
+    outline-offset: 2px;
+
+}
+
+
+
+/* Toggle escondido no desktop */
+
+.nav-toggle {
+
+    display: none;
+
+}
+
+
+
+.nav-toggle-label {
+
+    display: none;
+
+}
+
+
+
+/* --------------------------------------------------------------------------
+
+   MENU MOBILE (checkbox hack)
+
+   -------------------------------------------------------------------------- */
+
+@media (max-width: 1024px) {
+
+    header {
+
+        position: relative;
+
+    }
+
+
+
+    .btn {
+
+        order: 2;
+
+    }
+
+
+
+    .nav-toggle-label {
+
+        order: 3;
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        width: 40px;
+
+        height: 40px;
+
+        cursor: pointer;
+
+        border-radius: 8px;
+
+    }
+
+
+
+    .nav-toggle-label span,
+
+    .nav-toggle-label span::before,
+
+    .nav-toggle-label span::after {
+
+        display: block;
+
+        width: 22px;
+
+        height: 2px;
+
+        background-color: var(--color-text-main);
+
+        border-radius: 2px;
+
+        transition: transform 0.2s ease, opacity 0.2s ease;
+
+    }
+
+
+
+    .nav-toggle-label span {
+
+        position: relative;
+
+    }
+
+
+
+    .nav-toggle-label span::before,
+
+    .nav-toggle-label span::after {
+
+        content: "";
+
+        position: absolute;
+
+        left: 0;
+
+    }
+
+
+
+    .nav-toggle-label span::before {
+
+        top: -7px;
+
+    }
+
+
+
+    .nav-toggle-label span::after {
+
+        top: 7px;
+
+    }
+
+
+
+    nav {
+
+        order: 4;
+
+        flex-basis: 100%;
+
+        max-height: 0;
+
+        overflow: hidden;
+
+        transition: max-height 0.25s ease;
+
+    }
+
+
+
+    nav ul {
+
+        flex-direction: column;
+
+        gap: 0;
+
+        padding-top: 0.5rem;
+
+    }
+
+
+
+    nav li {
+
+        padding: 0.85rem 0;
+
+        border-top: 1px solid var(--color-border);
+
+        font-size: var(--fs-base);
+
+    }
+
+
+
+    .nav-toggle:checked~nav {
+
+        max-height: 320px;
+
+    }
+
+
+
+    .nav-toggle:checked~.nav-toggle-label span {
+
+        background-color: transparent;
+
+    }
+
+
+
+    .nav-toggle:checked~.nav-toggle-label span::before {
+
+        top: 0;
+
+        transform: rotate(45deg);
+
+    }
+
+
+
+    .nav-toggle:checked~.nav-toggle-label span::after {
+
+        top: 0;
+
+        transform: rotate(-45deg);
+
+    }
+
+}
+
+
+
+@media (min-width: 1025px) {
+
+    nav {
+
+        order: 2;
+
+    }
+
+
+
+    .btn {
+
+        order: 3;
+
+    }
+
+}
+
+
+
+@media (prefers-reduced-motion: reduce) {
+
+
+
+    .nav-toggle-label span,
+
+    nav,
+
+    .btn a,
+
+    nav li {
+
+        transition: none;
+
+    }
+
+}

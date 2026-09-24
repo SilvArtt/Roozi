@@ -1,0 +1,168 @@
+<app-header-app></app-header-app>
+
+<main class="solicitacao-main">
+
+    <!-- Info -->
+    <section class="info-section">
+        <div class="info-container">
+            <div class="card">
+                <div class="card-head">
+                    <h2>Informações</h2>
+                </div>
+                <div class="card-body">
+                    <h3>Como funciona a solicitação</h3>
+                    <p>Preencha os dados abaixo para solicitar seu cartão de passagem.
+                        Dependendo da operadora escolhida, você poderá optar por retirada presencial
+                        em uma estação ou entrega no endereço informado.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Form -->
+    <form class="solicitacao-form" [formGroup]="solicitacaoForm" (ngSubmit)="onSubmit()">
+        <section class="form-section">
+            <div class="form-container">
+                <div class="card">
+                    <div class="card-head">
+                        <h2>Solicitando um Cartão Passagem</h2>
+                    </div>
+
+                    <div class="card-body">
+
+                        <div class="field-row">
+                            <div class="field">
+                                <label for="region_id">Região</label>
+                                <select id="region_id" formControlName="region_id">
+                                    <option value="">Selecione a Região</option>
+                                    <!-- options do backend -->
+                                </select>
+                            </div>
+
+                            <div class="field">
+                                <label for="operator_id">Operadora de Ônibus</label>
+                                <select id="operator_id" formControlName="operator_id">
+                                    <option value="">Selecione a operadora</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <label for="card_type">Tipos de Cartão Disponíveis</label>
+                            <select id="card_type" formControlName="card_type">
+                                <option value="">Selecione o tipo de cartão passagem</option>
+                            </select>
+                        </div>
+
+                        <div class="field">
+                            <label for="passenger_category">Categoria do Passageiro</label>
+                            <select id="passenger_category" formControlName="passenger_category">
+                                <option value="">Selecione a categoria</option>
+                            </select>
+                        </div>
+
+                        <div class="field">
+                            <label for="cpf">CPF</label>
+                            <input id="cpf" type="text" placeholder="000.000.000-00" formControlName="cpf">
+                        </div>
+
+                        <div class="field-row">
+                            <div class="field">
+                                <label for="delivery_type">Como deseja receber o cartão?</label>
+                                <select id="delivery_type" formControlName="delivery_type">
+                                    <option value="">Selecione uma opção</option>
+                                    <option value="pickup">Presencial</option>
+                                    <option value="home_delivery">Entrega</option>
+                                </select>
+                            </div>
+
+                            @if (solicitacaoForm.get('delivery_type')?.value === 'pickup') {
+                            <div class="field">
+                                <label for="station">Estação Próxima de você</label>
+                                <input id="station" type="search" placeholder="Buscar estação"
+                                    formControlName="station">
+                            </div>
+                            }
+                        </div>
+
+                        @if (solicitacaoForm.get('delivery_type')?.value === 'home_delivery') {
+                        <div class="field-row">
+                            <div class="field">
+                                <label for="zip_code">CEP</label>
+                                <input id="zip_code" type="text" placeholder="00000-000" formControlName="zip_code"
+                                    maxlength="9">
+
+                                @if (buscandoCep) {
+                                <small class="field-hint">⏳ Buscando endereço...</small>
+                                }
+
+                                @if (erroCep) {
+                                <small class="field-error">❌ CEP não encontrado</small>
+                                }
+                            </div>
+
+                            <div class="field">
+                                <label for="address_number">Número</label>
+                                <input id="address_number" type="text" placeholder="Nº"
+                                    formControlName="address_number">
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <label for="street">Endereço</label>
+                            <input id="street" type="text" placeholder="Rua, Avenida..." formControlName="street">
+                        </div>
+
+                        <div class="field-row">
+                            <div class="field">
+                                <label for="complement">Complemento</label>
+                                <input id="complement" type="text" placeholder="Apto, bloco... (opcional)"
+                                    formControlName="complement">
+                            </div>
+                            <div class="field">
+                                <label for="neighborhood">Bairro</label>
+                                <input id="neighborhood" type="text" placeholder="Bairro"
+                                    formControlName="neighborhood">
+                            </div>
+                        </div>
+
+                        <div class="field-row">
+                            <div class="field">
+                                <label for="city">Cidade</label>
+                                <input id="city" type="text" placeholder="Cidade" formControlName="city">
+                            </div>
+                            <div class="field">
+                                <label for="state">UF</label>
+                                <select id="state" formControlName="state">
+                                    <option value="">Selecione seu Estado</option>
+                                    <option value="BA">BA</option>
+                                    <option value="SP">SP</option>
+                                    <option value="RJ">RJ</option>
+                                    <option value="MG">MG</option>
+                                </select>
+                            </div>
+                        </div>
+                        }
+
+                    </div>
+
+                    <div class="card-footer">
+                        <div class="field-checkbox">
+                            <input type="checkbox" id="lgpd" formControlName="lgpd">
+                            <label for="lgpd">
+                                Li e aceito a <a href="#">Política de Privacidade</a> e autorizo o tratamento
+                                dos meus dados pessoais pela Roozi, em conformidade com a Lei Geral de Proteção
+                                de Dados (LGPD - Lei nº 13.709/2018).
+                            </label>
+                        </div>
+
+                        <button type="submit" class="btn-primary" [disabled]="loading">
+                            {{ loading ? 'Enviando...' : 'Solicitar Cartão' }}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </form>
+
+</main>

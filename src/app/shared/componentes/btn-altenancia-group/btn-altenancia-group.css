@@ -1,0 +1,68 @@
+/* ==========================================================================
+   BTN-ALTENANCIA-GROUP.CSS
+   Toggle group com estilos de rádio (abas)
+   ========================================================================== */
+
+:host {
+    display: block;
+    margin: 1.5rem 2rem 0;
+}
+
+.toggle-group {
+    display: flex;
+    background-color: var(--color-bg-main);
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    padding: 4px;
+    gap: 4px;
+}
+
+.toggle-option {
+    flex: 1;
+    position: relative;
+}
+
+.toggle-option input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.toggle-option label {
+    display: block;
+    text-align: center;
+    padding: 0.55rem 0.75rem;
+    font-size: var(--fs-sm);
+    font-weight: var(--fw-semibold);
+    color: var(--color-text-muted);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.toggle-option input[type="radio"]:checked+label {
+    background-color: var(--color-bg-surface);
+    color: var(--color-primary-600);
+    box-shadow: var(--shadow-sm);
+}
+
+.toggle-option input[type="radio"]:focus-visible+label {
+    outline: 2px solid var(--color-primary-500);
+    outline-offset: 2px;
+}
+
+/* --------------------------------------------------------------------------
+   RESPONSIVO
+   -------------------------------------------------------------------------- */
+
+@media (max-width: 480px) {
+    :host {
+        margin: 1.25rem 1.5rem 0;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .toggle-option label {
+        transition: none;
+    }
+}

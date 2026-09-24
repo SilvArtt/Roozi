@@ -1,0 +1,156 @@
+<app-header-app></app-header-app>
+
+<main class="dashboard-container">
+
+    <!-- SEÇÃO: MEUS CARTÕES -->
+    <section class="card-sec-container">
+        <div class="sec-header">
+            <h2>Seus Cartões</h2>
+            <button class="btn-add-card">+ Adicionar Cartão</button>
+        </div>
+
+        <div class="filter">
+            <select name="card_type_filter" id="card-type-filter">
+                <option value="">Todos os tipos</option>
+                <option value="physical">Cartão Físico</option>
+                <option value="virtual">Cartão Virtual</option>
+            </select>
+        </div>
+
+        <div class="cards-wrapper">
+            <div class="card-item">
+                <div class="card-item-header">
+                    <span class="card-item-type">Cartão Físico</span>
+                    <span class="card-item-operator">Operadora Transporte</span>
+                </div>
+
+                <div class="card-item-body">
+                    <p class="card-item-nickname">Meu Cartão Diário</p>
+                    <p class="card-item-number">•••• •••• •••• 4821</p>
+                </div>
+
+                <div class="card-item-balance">
+                    <span class="balance-label">Saldo disponível</span>
+                    <span class="balance-value">R$ 42,80</span>
+                </div>
+
+                <div class="card-item-actions">
+                    <a href="/recarga?cardId=1" class="btn-card-action btn-recharge">Recarregar</a>
+                    <button type="button" class="btn-card-action btn-details">Detalhes</button>
+                </div>
+            </div>
+
+            <div class="add-card-slot">
+                <div class="plus-icon">+</div>
+                <p>Adicionar Novo Cartão</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- SEÇÃO: SERVIÇOS -->
+    <section class="option-panel-container">
+        <div class="option-panel-head">
+            <h2>Serviços Rápidos</h2>
+        </div>
+
+        <div class="option-panel-body">
+            <a href="/solicitacao" class="option-card">
+                <div class="option-card-icon">
+                    <img src="/assets/img/dashboard/icon-card-add.svg" alt="Adquirir Cartão">
+                </div>
+                <div class="option-card-name">
+                    <p>Adquirir Cartão</p>
+                </div>
+            </a>
+
+            <a href="/recarga" class="option-card">
+                <div class="option-card-icon">
+                    <img src="/assets/img/dashboard/icon-recharge.svg" alt="Recarregar Cartão">
+                </div>
+                <div class="option-card-name">
+                    <p>Recarregar Cartão</p>
+                </div>
+            </a>
+
+            <a href="/bloqueio" class="option-card">
+                <div class="option-card-icon">
+                    <img src="/assets/img/dashboard/icon-card-block.svg" alt="Bloquear Cartão">
+                </div>
+                <div class="option-card-name">
+                    <p>Bloquear Cartão</p>
+                </div>
+            </a>
+        </div>
+    </section>
+
+    <!-- SEÇÃO: HISTÓRICO -->
+    <section class="history-panel-container">
+        <div class="history-header">
+            <h2>Histórico de Atividades</h2>
+        </div>
+
+        <div class="history-filters">
+            <div class="filter">
+                <select name="card_filter" id="card-filter">
+                    <option value="">Selecione o cartão</option>
+                </select>
+            </div>
+
+            <div class="filter">
+                <select name="time_filter" id="time-filter">
+                    <option value="">Período</option>
+                    <option value="daily">Por dia</option>
+                    <option value="monthly">Por mês</option>
+                    <option value="yearly">Por ano</option>
+                </select>
+            </div>
+
+            <div class="filter">
+                <select name="transaction_type" id="transaction-type">
+                    <option value="all">Todas as transações</option>
+                    <option value="recharge">Recargas</option>
+                    <option value="spent">Gastos em Ônibus</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="history-list">
+            <div class="history-item spent">
+                <div class="history-icon">🚌</div>
+                <div class="history-info">
+                    <h4>Ônibus - Linha 035 (Centro / Bairro)</h4>
+                    <p>18 de Setembro, 14:20 • Operadora Transporte</p>
+                </div>
+                <div class="history-amount negative">- R$ 4,40</div>
+            </div>
+
+            <div class="history-item recharge">
+                <div class="history-icon">💰</div>
+                <div class="history-info">
+                    <h4>Recarga via PIX</h4>
+                    <p>17 de Setembro, 09:15 • Confirmado</p>
+                </div>
+                <div class="history-amount positive">+ R$ 50,00</div>
+            </div>
+
+            <div class="history-item spent">
+                <div class="history-icon">🚌</div>
+                <div class="history-info">
+                    <h4>Ônibus - Linha 112 (Integração)</h4>
+                    <p>16 de Setembro, 18:45 • Operadora Transporte</p>
+                </div>
+                <div class="history-amount negative">- R$ 4,40</div>
+            </div>
+
+            <div class="history-item spent">
+                <div class="history-icon">🚌</div>
+                <div class="history-info">
+                    <h4>Ônibus - Linha 035 (Centro / Bairro)</h4>
+                    <p>16 de Setembro, 07:30 • Operadora Transporte</p>
+                </div>
+                <div class="history-amount negative">- R$ 4,40</div>
+            </div>
+        </div>
+    </section>
+
+</main>

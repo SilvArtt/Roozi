@@ -1,0 +1,138 @@
+<app-header-padrao></app-header-padrao>
+
+<main class="cadastro-main">
+    <form class="cadastro-form" [formGroup]="cadastroForm" (ngSubmit)="onSubmit()">
+        <section class="cadastro-section">
+            <div class="cadastro-container">
+
+                <div class="card">
+                    <div class="card-head">
+                        <h2>Criar Conta</h2>
+                    </div>
+
+                    <!-- Toggle Passageiro / Operadora -->
+                    <div class="user-type-toggle">
+                        <button type="button" class="user-type-btn" [class.active]="userType === 'passageiro'"
+                            (click)="setUserType('passageiro')">
+                            Passageiro
+                        </button>
+                        <button type="button" class="user-type-btn" [class.active]="userType === 'operadora'"
+                            (click)="setUserType('operadora')">
+                            Operadora de Transporte
+                        </button>
+                    </div>
+
+                    <div class="card-body">
+
+                        <!-- CAMPOS PASSAGEIRO -->
+                        @if (userType === 'passageiro') {
+                        <div class="field">
+                            <label for="nome">Nome Completo</label>
+                            <input id="nome" type="text" placeholder="Insira seu nome completo" formControlName="nome">
+                        </div>
+
+                        <div class="field">
+                            <label for="password">Senha</label>
+                            <input id="password" type="password" placeholder="***************"
+                                formControlName="password">
+                        </div>
+
+                        <div class="field">
+                            <label for="username">Nome de Usuário</label>
+                            <input id="username" type="text" placeholder="ex: joaosilva" formControlName="username">
+                        </div>
+
+                        <div class="field">
+                            <label for="telefone">Telefone / WhatsApp</label>
+                            <input id="telefone" type="tel" placeholder="(00) 00000-0000" formControlName="telefone">
+                        </div>
+
+                        <div class="field">
+                            <label for="email">E-mail</label>
+                            <input id="email" type="email" placeholder="seuemail@exemplo.com" formControlName="email">
+                        </div>
+                        }
+
+                        <!-- CAMPOS OPERADORA -->
+                        @if (userType === 'operadora') {
+                        <div class="field">
+                            <label for="responsavel">Nome do Responsável</label>
+                            <input id="responsavel" type="text" placeholder="Nome de quem vai gerenciar a conta"
+                                formControlName="responsavel">
+                        </div>
+
+                        <div class="field">
+                            <label for="nome_operadora">Nome da Operadora</label>
+                            <input id="nome_operadora" type="text" placeholder="Insira o nome da sua operadora"
+                                formControlName="nome_operadora">
+                        </div>
+
+                        <div class="field">
+                            <label for="cnpj">CNPJ</label>
+                            <input id="cnpj" type="text" placeholder="00.000.000/0001-00" formControlName="cnpj">
+                        </div>
+
+                        <div class="field">
+                            <label for="regiao">Região de Atuação</label>
+                            <input id="regiao" type="text" placeholder="ex: Bahia" formControlName="regiao">
+                        </div>
+
+                        <div class="field">
+                            <label for="bilhetagem">Sistema de Bilhetagem Atual</label>
+                            <input id="bilhetagem" type="text" formControlName="bilhetagem">
+                        </div>
+
+                        <div class="field">
+                            <label for="telefone_op">Telefone Comercial</label>
+                            <input id="telefone_op" type="tel" placeholder="(00) 0000-0000"
+                                formControlName="telefone_op">
+                        </div>
+
+                        <div class="field">
+                            <label for="email_op">E-mail Comercial</label>
+                            <input id="email_op" type="email" placeholder="contato@suaoperadora.com"
+                                formControlName="email_op">
+                        </div>
+
+                        <div class="field">
+                            <label for="password_op">Senha</label>
+                            <input id="password_op" type="password" placeholder="***************"
+                                formControlName="password_op">
+                        </div>
+                        }
+
+                        <!-- LGPD -->
+                        <div class="field-checkbox">
+                            <input type="checkbox" id="lgpd" formControlName="lgpd">
+                            <label for="lgpd">
+                                Li e aceito a <a href="#">Política de Privacidade</a> e autorizo o tratamento
+                                dos meus dados pessoais pela Roozi, em conformidade com a Lei Geral de Proteção
+                                de Dados (LGPD - Lei nº 13.709/2018).
+                            </label>
+                        </div>
+
+                    </div>
+
+                    <div class="card-footer">
+
+                        @if (errorMessage) {
+                        <div class="form-error">{{ errorMessage }}</div>
+                        }
+
+                        <button type="submit" class="btn-primary" [disabled]="loading">
+                            {{ loading ? 'Cadastrando...' : 'Cadastrar' }}
+                        </button>
+
+                        <p class="cadastro-login">
+                            Já possui uma conta?
+                            <a routerLink="/login">Fazer Login</a>
+                        </p>
+                </div>
+            </div>
+
+            </div>
+        </section>
+    </form>
+</main>
+
+<app-footer></app-footer>

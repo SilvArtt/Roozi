@@ -1,0 +1,296 @@
+/* ==========================================================================
+   RECARGA.CSS
+   ========================================================================== */
+
+:host {
+    display: block;
+    min-height: 100vh;
+    background-color: var(--color-bg-main);
+    background-image: url('/assets/img/base/page-bg-base.svg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}
+
+/* --------------------------------------------------------------------------
+   1. LAYOUT
+   -------------------------------------------------------------------------- */
+
+.recarga-main {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: clamp(1.5rem, 4vw, 3rem) 1.25rem 4rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 1.5rem;
+}
+
+.info-section {
+    flex: 0 0 300px;
+}
+
+.recarga-form {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+}
+
+.form-section {
+    flex: 1;
+    min-width: 0;
+}
+
+.form-container {
+    width: 100%;
+}
+
+.info-container {
+    position: sticky;
+    top: 90px;
+}
+
+@media (max-width: 800px) {
+    .recarga-main {
+        flex-direction: column;
+    }
+
+    .info-section {
+        flex-basis: auto;
+        width: 100%;
+    }
+
+    .info-container {
+        position: static;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   2. CARD
+   -------------------------------------------------------------------------- */
+
+.card {
+    background-color: var(--color-bg-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 20px;
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+}
+
+.card-head {
+    padding: 1.75rem 2rem 0;
+}
+
+.card-head h2 {
+    font-size: var(--fs-xl);
+    margin-bottom: 0.25rem;
+}
+
+/* Card de informações */
+.info-container .card-body {
+    padding: 1.25rem 2rem 1.75rem;
+}
+
+.info-container h3 {
+    font-size: var(--fs-base);
+    color: var(--color-primary-600);
+    margin-bottom: 0.5rem;
+}
+
+.info-container p {
+    font-size: var(--fs-sm);
+    color: var(--color-text-muted);
+    margin-bottom: 0;
+}
+
+.info-container p + p {
+    margin-top: 0.75rem;
+}
+
+/* Card de formulário */
+.form-container .card-body {
+    padding: 1.5rem 2rem 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+}
+
+.card-footer {
+    padding: 1.5rem 2rem 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+}
+
+/* --------------------------------------------------------------------------
+   3. CAMPOS
+   -------------------------------------------------------------------------- */
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.field label {
+    font-size: var(--fs-sm);
+    font-weight: var(--fw-semibold);
+    color: var(--color-text-main);
+}
+
+.field input,
+.field select {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    font-family: var(--font-sans);
+    font-size: var(--fs-base);
+    color: var(--color-text-main);
+    background-color: var(--color-bg-main);
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.field input::placeholder {
+    color: var(--color-text-subtle);
+}
+
+.field input:focus,
+.field select:focus {
+    outline: none;
+    border-color: var(--color-primary-500);
+    box-shadow: 0 0 0 3px rgba(211, 162, 43, 0.18);
+}
+
+/* --------------------------------------------------------------------------
+   4. VALORES RÁPIDOS
+   -------------------------------------------------------------------------- */
+
+.quick-values {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+}
+
+.quick-btn {
+    flex: 1 1 90px;
+    text-align: center;
+    padding: 0.7rem 0.5rem;
+    font-size: var(--fs-sm);
+    font-weight: var(--fw-semibold);
+    color: var(--color-text-main);
+    background-color: var(--color-bg-main);
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, border-color 0.2s ease,
+        color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.quick-btn:hover {
+    border-color: var(--color-primary-300);
+}
+
+.quick-btn:focus-visible {
+    outline: 2px solid var(--color-primary-500);
+    outline-offset: 2px;
+}
+
+/* --------------------------------------------------------------------------
+   5. CHECKBOX
+   -------------------------------------------------------------------------- */
+
+.field-checkbox {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 0.65rem;
+}
+
+.field-checkbox input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    min-width: 18px;
+    margin-top: 0.15rem;
+    accent-color: var(--color-primary-500);
+    cursor: pointer;
+}
+
+.field-checkbox label {
+    font-size: var(--fs-xs);
+    font-weight: var(--fw-light);
+    color: var(--color-text-muted);
+    line-height: 1.5;
+    cursor: pointer;
+}
+
+/* --------------------------------------------------------------------------
+   6. BOTÃO
+   -------------------------------------------------------------------------- */
+
+.btn-primary {
+    display: block;
+    width: 100%;
+    padding: 0.85rem 1.5rem;
+    background-color: var(--color-primary-500);
+    color: var(--color-primary-900);
+    border: none;
+    border-radius: 10px;
+    font-family: var(--font-sans);
+    font-size: var(--fs-sm);
+    font-weight: var(--fw-semibold);
+    letter-spacing: var(--ls-wide);
+    line-height: 1;
+    cursor: pointer;
+    box-shadow: var(--shadow-sm);
+    transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.btn-primary:hover:not(:disabled) {
+    background-color: var(--color-primary-600);
+    color: var(--color-text-inverse);
+    box-shadow: var(--shadow-amber);
+    transform: translateY(-1px);
+}
+
+.btn-primary:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.btn-primary:focus-visible {
+    outline: 2px solid var(--color-primary-500);
+    outline-offset: 2px;
+}
+
+/* --------------------------------------------------------------------------
+   7. RESPONSIVO
+   -------------------------------------------------------------------------- */
+
+@media (max-width: 560px) {
+    .card-head {
+        padding: 1.5rem 1.5rem 0;
+    }
+
+    .form-container .card-body {
+        padding: 1.25rem 1.5rem 0.5rem;
+    }
+
+    .info-container .card-body {
+        padding: 1rem 1.5rem 1.5rem;
+    }
+
+    .card-footer {
+        padding: 1.25rem 1.5rem 1.5rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .field input,
+    .field select,
+    .quick-btn,
+    .btn-primary {
+        transition: none;
+    }
+}

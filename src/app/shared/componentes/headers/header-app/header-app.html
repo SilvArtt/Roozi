@@ -1,0 +1,27 @@
+<header>
+    <div class="header-container">
+        <a class="logo" routerLink="/dashboard" aria-label="Roozi - Dashboard">
+            <img src="./assets/img/base/logo.png" alt="Logo da Roozi">
+            <p>Roozi</p>
+        </a>
+
+        <input type="checkbox" id="menu-toggle" class="menu-toggle-checkbox">
+        <label for="menu-toggle" class="hamburger-btn" aria-label="Abrir Menu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </label>
+
+        <nav class="nav-menu">
+            <ul class="nav-list">
+                <li><a routerLink="/dashboard">Voltar ao Dashboard</a></li>
+                <li class="nav-divider"></li>
+                <li><a routerLink="/solicitacao">Solicitar Cartão</a></li>
+                <li><a routerLink="/recarga">Recarregar Cartão</a></li>
+                <li><a routerLink="/bloqueio">Bloquear Cartão</a></li>
+                <li class="nav-divider"></li>
+                <li><a (click)="onLogout()" class="btn-logout">Sair</a></li>
+            </ul>
+        </nav>
+    </div>
+</header>

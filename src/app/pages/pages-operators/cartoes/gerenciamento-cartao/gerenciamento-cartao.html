@@ -1,0 +1,130 @@
+<app-header-operadora></app-header-operadora>
+
+<main class="gerenciamento-main">
+    <div class="gerenciamento-container">
+
+        <h2>Meus Cartões</h2>
+
+        <!-- Abas -->
+        <div class="tabs">
+            <button type="button" class="tab"
+                [class.active]="abaAtiva === 'lista'"
+                (click)="mudarAba('lista')">
+                Lista
+            </button>
+            <button type="button" class="tab"
+                [class.active]="abaAtiva === 'cadastrar'"
+                (click)="mudarAba('cadastrar')">
+                Cadastrar Cartão
+            </button>
+            <button type="button" class="tab"
+                [class.active]="abaAtiva === 'importar'"
+                (click)="mudarAba('importar')">
+                Importar Cartões
+            </button>
+        </div>
+
+        <!-- Feedback -->
+        @if (erro) {
+            <div class="alert alert-error">{{ erro }}</div>
+        }
+        @if (sucesso) {
+            <div class="alert alert-success">{{ sucesso }}</div>
+        }
+
+        <!-- CONTEÚDO: LISTA -->
+        @if (abaAtiva === 'lista') {
+            <section class="tab-content">
+                <p class="resumo">Total: <strong>{{ cartoes.length }}</strong> cartões</p>
+
+                @if (cartoes.length === 0) {
+                    <p class="empty">Nenhum cartão cadastrado ainda.</p>
+                } @else {
+                    <div class="lista">
+                        @for (card of cartoes; track card.id) {
+                            <div class="cartao-item">
+                                <div class="cartao-info">
+                                    <p class="cartao-code">{{ card.card_code }}</p>
+                                    <p class="cartao-meta">
+                                        {{ card.card_type }} • {{ card.card_status }} • {{ card.passenger_category }}
+                                    </p>
+                                </div>
+                                <div class="cartao-saldo">
+                                    R$ {{ card.balance | number:'1.2-2' }}
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+            </section>
+        }
+
+        <!-- CONTEÚDO: CADASTRAR -->
+        @if (abaAtiva === 'cadastrar') {
+            <section class="tab-content">
+                <form [formGroup]="cadastroForm" (ngSubmit)="onSubmitCadastro()">
+
+                    <div class="field">
+                        <label for="card_code">Código do Cartão</label>
+                        <input id="card_code" type="text" placeholder="Digite o código único"
+                            formControlName="card_code">
+                    </div>
+
+                    <div class="field">
+                        <label for="card_type">Tipo</label>
+                        <select id="card_type" formControlName="card_type">
+                            <option value="physical">Físico</option>
+                            <option value="virtual">Virtual</option>
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label for="passenger_category">Categoria</label>
+                        <select id="passenger_category" formControlName="passenger_category">
+                            <option value="comum">Comum</option>
+                            <option value="estudante">Estudante</option>
+                            <option value="idoso">Idoso</option>
+                            <option value="deficiente">Deficiente</option>
+                            <option value="trabalhador">Trabalhador</option>
+                            <option value="avulso">Avulso</option>
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label for="nickname">Apelido (opcional)</label>
+                        <input id="nickname" type="text" placeholder="Ex: Lote 001"
+                            formControlName="nickname">
+                    </div>
+
+                    <button type="submit" class="btn-primary" [disabled]="loading">
+                        {{ loading ? 'Cadastrando...' : 'Cadastrar Cartão' }}
+                    </button>
+
+                </form>
+            </section>
+        }
+
+        <!-- CONTEÚDO: IMPORTAR -->
+        @if (abaAtiva === 'importar') {
+            <section class="tab-content">
+                <p>Faça upload de um arquivo CSV com os códigos dos cartões.</p>
+                <p class="hint">
+                    Formato esperado: <code>card_code,card_type,passenger_category,nickname</code><br>
+                    Exemplo: <code>48210001,physical,comum,Lote 001</code>
+                </p>
+
+                <div class="field">
+                    <label for="file">Arquivo CSV</label>
+                    <input id="file" type="file" accept=".csv" (change)="onFileSelected($event)">
+                </div>
+
+                <button type="button" class="btn-primary"
+                    [disabled]="!arquivoSelecionado || importando"
+                    (click)="onImportar()">
+                    {{ importando ? 'Importando...' : 'Importar Cartões' }}
+                </button>
+            </section>
+        }
+
+    </div>
+</main>

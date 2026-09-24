@@ -1,0 +1,74 @@
+<app-header-padrao></app-header-padrao>
+
+<main class="login-main">
+    <form class="login-form" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+        <section class="login-section">
+            <div class="login-container">
+
+                <div class="card">
+                    <div class="card-head">
+                        <h2>Login</h2>
+                    </div>
+
+                    <div class="card-body">
+                        <div class="field">
+                            <label for="email">E-mail</label>
+                            <input id="email" type="email" placeholder="seuemail@exemplo.com"
+                                formControlName="email"
+                                [class.input-error]="email?.invalid && email?.touched">
+
+                            @if (email?.invalid && email?.touched) {
+                                <small class="field-error">
+                                    @if (email?.errors?.['required']) {
+                                        <span>O e-mail é obrigatório.</span>
+                                    }
+                                    @if (email?.errors?.['email']) {
+                                        <span>Digite um e-mail válido.</span>
+                                    }
+                                </small>
+                            }
+                        </div>
+
+                        <div class="field">
+                            <label for="password">Senha</label>
+                            <input id="password" type="password" placeholder="***************"
+                                formControlName="password"
+                                [class.input-error]="password?.invalid && password?.touched">
+
+                            @if (password?.invalid && password?.touched) {
+                                <small class="field-error">
+                                    @if (password?.errors?.['required']) {
+                                        <span>A senha é obrigatória.</span>
+                                    }
+                                    @if (password?.errors?.['minlength']) {
+                                        <span>A senha deve ter pelo menos 6 caracteres.</span>
+                                    }
+                                </small>
+                            }
+                        </div>
+
+                        @if (errorMessage) {
+                            <div class="form-error">
+                                {{ errorMessage }}
+                            </div>
+                        }
+                    </div>
+
+                    <div class="card-footer">
+                        <button type="submit" class="btn-primary" [disabled]="loading">
+                            {{ loading ? 'Entrando...' : 'Entrar' }}
+                        </button>
+
+                        <p class="login-signup">
+                            Ainda não possui uma conta?
+                            <a routerLink="/cadastro">Criar Conta</a>
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+    </form>
+</main>
+
+<app-footer></app-footer>

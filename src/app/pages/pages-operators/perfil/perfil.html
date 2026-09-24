@@ -1,0 +1,147 @@
+<app-header-operadora></app-header-operadora>
+
+<main class="perfil-main">
+    <div class="perfil-container">
+
+        <h2>Perfil da Empresa</h2>
+
+        <!-- Abas -->
+        <div class="tabs">
+            <button type="button" class="tab"
+                [class.active]="abaAtiva === 'dados'"
+                (click)="mudarAba('dados')">
+                Dados da Empresa
+            </button>
+            <button type="button" class="tab"
+                [class.active]="abaAtiva === 'areas'"
+                (click)="mudarAba('areas')">
+                Áreas de Atuação
+            </button>
+            <button type="button" class="tab"
+                [class.active]="abaAtiva === 'config'"
+                (click)="mudarAba('config')">
+                Tipos & Categorias
+            </button>
+        </div>
+
+        @if (erro) {
+            <div class="alert alert-error">{{ erro }}</div>
+        }
+        @if (sucesso) {
+            <div class="alert alert-success">{{ sucesso }}</div>
+        }
+
+        <!-- ABA 1: DADOS DA EMPRESA -->
+        @if (abaAtiva === 'dados') {
+            <section class="tab-content">
+                @if (carregando) {
+                    <p class="empty">Carregando...</p>
+                } @else {
+                    <form [formGroup]="dadosForm" (ngSubmit)="salvarDados()">
+
+                        <div class="field">
+                            <label for="company_name">Nome da Operadora</label>
+                            <input id="company_name" type="text" formControlName="company_name">
+                        </div>
+
+                        <div class="field">
+                            <label for="manager_name">Nome do Responsável</label>
+                            <input id="manager_name" type="text" formControlName="manager_name">
+                        </div>
+
+                        <div class="field">
+                            <label for="cnpj">CNPJ</label>
+                            <input id="cnpj" type="text" formControlName="cnpj" placeholder="00.000.000/0001-00">
+                        </div>
+
+                        <div class="field">
+                            <label for="company_phone">Telefone Comercial</label>
+                            <input id="company_phone" type="tel" formControlName="company_phone">
+                        </div>
+
+                        <button type="submit" class="btn-primary" [disabled]="salvando">
+                            {{ salvando ? 'Salvando...' : 'Salvar Alterações' }}
+                        </button>
+
+                    </form>
+                }
+            </section>
+        }
+
+        <!-- ABA 2: ÁREAS DE ATUAÇÃO -->
+        @if (abaAtiva === 'areas') {
+            <section class="tab-content">
+                <p class="resumo">Selecione as regiões onde sua operadora atua.</p>
+
+                @if (regioes.length === 0) {
+                    <p class="empty">Carregando regiões...</p>
+                } @else {
+                    <div class="checkbox-grid">
+                        @for (regiao of regioes; track regiao.id) {
+                            <label class="checkbox-item">
+                                <input type="checkbox"
+                                    [checked]="areaIdsSelecionadas.includes(regiao.id)"
+                                    (change)="toggleArea(regiao.id)">
+                                <span>{{ regiao.name }} ({{ regiao.uf }})</span>
+                            </label>
+                        }
+                    </div>
+
+                    <button type="button" class="btn-primary" [disabled]="salvando"
+                        (click)="salvarAreas()">
+                        {{ salvando ? 'Salvando...' : 'Salvar Áreas' }}
+                    </button>
+                }
+            </section>
+        }
+
+                <!-- ABA 3: TIPOS & CATEGORIAS -->
+        @if (abaAtiva === 'config') {
+            <section class="tab-content">
+
+                <div class="config-group">
+                    <h3>Tipos de Cartão</h3>
+                    <div class="checkbox-grid">
+                        @for (tipo of tiposDisponiveis; track tipo.valor) {
+                            <label class="checkbox-item">
+                                <input type="checkbox"
+                                    [checked]="cardTypesSelecionados.includes(tipo.valor)"
+                                    (change)="toggleCardType(tipo.valor)">
+                                <span>{{ tipo.label }}</span>
+                            </label>
+                        }
+                    </div>
+                </div>
+
+                <div class="config-group">
+                    <h3>Categorias Aceitas</h3>
+                    <div class="checkbox-grid">
+                        @for (cat of categoriasDisponiveis; track cat.valor) {
+                            <label class="checkbox-item">
+                                <input type="checkbox"
+                                    [checked]="categoriesSelecionadas.includes(cat.valor)"
+                                    (change)="toggleCategory(cat.valor)">
+                                <span>{{ cat.label }}</span>
+                            </label>
+                        }
+                    </div>
+                </div>
+
+                <div [formGroup]="configForm" class="config-group">
+                    <div class="field">
+                        <label for="billing_system">Sistema de Bilhetagem</label>
+                        <input id="billing_system" type="text" formControlName="billing_system"
+                            placeholder="Ex: Integração própria, SEMOB...">
+                    </div>
+                </div>
+
+                <button type="button" class="btn-primary" [disabled]="salvando"
+                    (click)="salvarConfig()">
+                    {{ salvando ? 'Salvando...' : 'Salvar Configurações' }}
+                </button>
+
+            </section>
+        }
+
+    </div>
+</main>

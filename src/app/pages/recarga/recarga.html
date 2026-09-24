@@ -1,0 +1,94 @@
+<app-header-app></app-header-app>
+
+<main class="recarga-main">
+
+    <!-- Coluna de informação -->
+    <section class="info-section">
+        <div class="info-container">
+            <div class="card">
+                <div class="card-head">
+                    <h2>Informações</h2>
+                </div>
+                <div class="card-body">
+                    <h3>Como funciona a recarga</h3>
+                    <p>Selecione o cartão que deseja recarregar, escolha um valor e finalize o pagamento.
+                        O saldo é liberado para uso imediatamente após a confirmação.</p>
+                    <p>Recargas via Pix são processadas na hora. Boletos podem levar até 3 dias úteis
+                        para compensar.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Formulário -->
+    <form class="recarga-form" [formGroup]="recargaForm" (ngSubmit)="onSubmit()">
+        <section class="form-section">
+            <div class="form-container">
+                <div class="card">
+                    <div class="card-head">
+                        <h2>Recarregar Cartão</h2>
+                    </div>
+
+                    <div class="card-body">
+
+                        <div class="field">
+                            <label for="card_id">Cartão</label>
+                            <select id="card_id" formControlName="card_id">
+                                <option value="" disabled>Selecione o cartão</option>
+                                @for (card of meusCartoes; track card.id) {
+                                <option [value]="card.id">
+                                    {{ card.nickname || card.card_code }} — R$ {{ card.balance | number:'1.2-2' }}
+                                </option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="field">
+                            <label for="amount">Valor da Recarga (R$)</label>
+                            <input id="amount" type="number" min="5" max="500" step="0.01" placeholder="0,00"
+                                inputmode="decimal" formControlName="amount">
+                        </div>
+
+                        <div class="field">
+                            <label>Valores Rápidos</label>
+                            <div class="quick-values">
+                                <button type="button" class="quick-btn" (click)="setAmount(10)">R$ 10</button>
+                                <button type="button" class="quick-btn" (click)="setAmount(20)">R$ 20</button>
+                                <button type="button" class="quick-btn" (click)="setAmount(30)">R$ 30</button>
+                                <button type="button" class="quick-btn" (click)="setAmount(50)">R$ 50</button>
+                                <button type="button" class="quick-btn" (click)="setAmount(100)">R$ 100</button>
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <label for="payment_method">Forma de Pagamento</label>
+                            <select id="payment_method" formControlName="payment_method">
+                                <option value="" disabled>Selecione a forma de pagamento</option>
+                                <option value="pix">Pix</option>
+                                <option value="credit-card">Cartão de Crédito</option>
+                                <option value="debit-card">Cartão de Débito</option>
+                                <option value="boleto">Boleto Bancário</option>
+                            </select>
+                        </div>
+
+                    </div>
+
+                    <div class="card-footer">
+                        <div class="field-checkbox">
+                            <input type="checkbox" id="confirm_recharge" formControlName="confirm_recharge">
+                            <label for="confirm_recharge">
+                                Confirmo que os dados da recarga estão corretos e estou ciente de que o valor
+                                será debitado imediatamente após a confirmação.
+                            </label>
+                        </div>
+
+                        <button type="submit" class="btn-primary" [disabled]="loading">
+                            {{ loading ? 'Processando...' : 'Confirmar Recarga' }}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </form>
+
+</main>
