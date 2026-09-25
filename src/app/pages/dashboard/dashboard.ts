@@ -7,9 +7,11 @@ import { HeaderApp } from '../../shared/componentes/headers/header-app/header-ap
 import { CardService } from '@core/services/card/card-service';
 import { CardRequestService } from '@core/services/card/cardRequest/card-request-service';
 import { TransactionService } from '@core/services/transaction/transaction-service';
+import { AuthService } from '@core/services/auth/auth-service';
 import {
     CartaoModel,
     CardType,
+    CardStatus,
     MeuPedido,
     TransacaoModel,
     TimeFilter,
@@ -28,12 +30,13 @@ export class Dashboard implements OnInit {
     private cardService = inject(CardService);
     private cardRequestService = inject(CardRequestService);
     private transactionService = inject(TransactionService);
+    private authService = inject(AuthService);
 
     // Cartões
     cartoes: CartaoModel[] = [];
     carregandoCartoes = true;
 
-    // Pedidos (novo)
+    // Pedidos
     pedidos: MeuPedido[] = [];
     carregandoPedidos = true;
 
@@ -46,7 +49,7 @@ export class Dashboard implements OnInit {
     filtroPeriodo: TimeFilter = TimeFilter.MENSAL;
     filtroTipo: TransactionTypeFilter = TransactionTypeFilter.TODAS;
 
-    // Modal
+    // Modal adicionar cartão
     modalAberto = false;
     salvando = false;
     erro = '';
@@ -57,11 +60,32 @@ export class Dashboard implements OnInit {
         nickname: [''],
     });
 
+    // ⭐ Modal detalhes
+    modalDetalhesAberto = false;
+    cartaoSelecionado: CartaoModel | null = null;
+    salvandoDetalhes = false;
+    erroDetalhes = '';
+    sucessoDetalhes = '';
+
+    detalhesForm = this.fb.group({
+        nickname: [''],
+        card_code: [''],
+    });
+
+    // ⭐ Modal confirmação de remoção
+    modalRemoverAberto = false;
+    removendo = false;
+    erroRemover = '';
+
     ngOnInit() {
         this.carregarCartoes();
         this.carregarPedidos();
         this.carregarTransacoes();
     }
+
+    // ═══════════════════════════════════════════════════════════
+    // CARREGAR DADOS
+    // ═══════════════════════════════════════════════════════════
 
     carregarCartoes() {
         this.carregandoCartoes = true;
@@ -81,7 +105,6 @@ export class Dashboard implements OnInit {
         this.carregandoPedidos = true;
         this.cardRequestService.getMyPedidos().pipe(take(1)).subscribe({
             next: (pedidos) => {
-                
                 this.pedidos = pedidos.filter(p =>
                     p.status === 'pending_payment' ||
                     p.status === 'processing' ||
@@ -109,7 +132,6 @@ export class Dashboard implements OnInit {
             },
         });
     }
-
 
     aplicarFiltros() {
         this.transactionService.getFilteredTransactions({
@@ -142,7 +164,9 @@ export class Dashboard implements OnInit {
         this.aplicarFiltros();
     }
 
-  
+    // ═══════════════════════════════════════════════════════════
+    // MODAL ADICIONAR
+    // ═══════════════════════════════════════════════════════════
 
     abrirModal() {
         this.modalAberto = true;
@@ -194,6 +218,145 @@ export class Dashboard implements OnInit {
         });
     }
 
+    // ═══════════════════════════════════════════════════════════
+    // ⭐ MODAL DETALHES
+    // ═══════════════════════════════════════════════════════════
+
+  get saldoCartaoSelecionado(): number {
+    return this.cartaoSelecionado?.balance ?? 0;
+  }
+
+    abrirDetalhes(card: CartaoModel) {
+        this.cartaoSelecionado = card;
+        this.modalDetalhesAberto = true;
+        this.erroDetalhes = '';
+        this.sucessoDetalhes = '';
+
+        this.detalhesForm.patchValue({
+            nickname: card.nickname ?? '',
+            card_code: card.card_code ?? '',
+        });
+    }
+
+    fecharDetalhes() {
+        this.modalDetalhesAberto = false;
+        this.cartaoSelecionado = null;
+        this.detalhesForm.reset();
+        this.erroDetalhes = '';
+        this.sucessoDetalhes = '';
+    }
+
+    salvarDetalhes() {
+        if (!this.cartaoSelecionado) return;
+
+        const card = this.cartaoSelecionado;
+        const novoNickname = this.detalhesForm.value.nickname ?? '';
+        const novoCode = (this.detalhesForm.value.card_code ?? '').trim();
+
+        const nicknameMudou = novoNickname !== (card.nickname ?? '');
+        const codeMudou = novoCode !== card.card_code;
+
+        if (!nicknameMudou && !codeMudou) {
+            this.erroDetalhes = 'Nada foi alterado.';
+            return;
+        }
+
+        this.salvandoDetalhes = true;
+        this.erroDetalhes = '';
+        this.sucessoDetalhes = '';
+
+       
+        if (codeMudou) {
+            const uid = this.authService.currentFirebaseUser?.uid;
+            if (!uid) {
+                this.salvandoDetalhes = false;
+                this.erroDetalhes = 'Usuário não logado.';
+                return;
+            }
+
+            this.cardService.trocarCartao(card.id, novoCode, uid)
+                .pipe(take(1))
+                .subscribe({
+                    next: () => {
+                        this.salvandoDetalhes = false;
+                        this.sucessoDetalhes = 'Cartão trocado com sucesso!';
+                        this.carregarCartoes();
+
+                        setTimeout(() => {
+                            this.fecharDetalhes();
+                        }, 1500);
+                    },
+                    error: (err) => {
+                        this.salvandoDetalhes = false;
+                        console.error('Erro ao trocar cartão:', err);
+                        this.erroDetalhes = err?.message ?? 'Erro ao trocar cartão.';
+                    },
+                });
+            return;
+        }
+
+        
+        this.cardService.updateCardNickname(card.id, novoNickname)
+            .pipe(take(1))
+            .subscribe({
+                next: () => {
+                    this.salvandoDetalhes = false;
+                    this.sucessoDetalhes = 'Apelido atualizado!';
+                    this.carregarCartoes();
+
+                    setTimeout(() => {
+                        this.fecharDetalhes();
+                    }, 1000);
+                },
+                error: (err) => {
+                    this.salvandoDetalhes = false;
+                    console.error('Erro ao atualizar apelido:', err);
+                    this.erroDetalhes = 'Erro ao atualizar apelido.';
+                },
+            });
+    }
+
+    // ═══════════════════════════════════════════════════════════
+    // MODAL REMOVER
+    // ═══════════════════════════════════════════════════════════
+
+    abrirRemover() {
+        this.modalRemoverAberto = true;
+        this.erroRemover = '';
+    }
+
+    fecharRemover() {
+        this.modalRemoverAberto = false;
+        this.erroRemover = '';
+    }
+
+    confirmarRemover() {
+        if (!this.cartaoSelecionado) return;
+
+        this.removendo = true;
+        this.erroRemover = '';
+
+        this.cardService.removeCard(this.cartaoSelecionado.id)
+            .pipe(take(1))
+            .subscribe({
+                next: () => {
+                    this.removendo = false;
+                    this.fecharRemover();
+                    this.fecharDetalhes();
+                    this.carregarCartoes();
+                },
+                error: (err) => {
+                    this.removendo = false;
+                    console.error('Erro ao remover cartão:', err);
+                    this.erroRemover = 'Erro ao desvincular cartão.';
+                },
+            });
+    }
+
+    // ═══════════════════════════════════════════════════════════
+    // HELPERS
+    // ═══════════════════════════════════════════════════════════
+
     copiarCodigo(code: string) {
         navigator.clipboard.writeText(code).then(() => {
             console.log('Código copiado:', code);
@@ -225,7 +388,7 @@ export class Dashboard implements OnInit {
         return new Intl.NumberFormat('pt-BR', {
             style: 'currency',
             currency: 'BRL',
-        }).format(valor);
+        }).format(valor ?? 0);
     }
 
     formatarData(date: Date): string {
@@ -242,5 +405,36 @@ export class Dashboard implements OnInit {
 
     isRecarga(tipo: tipoTransacao): boolean {
         return tipo === tipoTransacao.RECARGA;
+    }
+
+    isBloqueado(card: CartaoModel): boolean {
+        return card.card_status === CardStatus.BLOQUEADO;
+    }
+
+    getCategoriaLabel(cat: string): string {
+        const mapa: Record<string, string> = {
+            'comum': 'Comum',
+            'estudante': 'Estudante',
+            'idoso': 'Idoso',
+            'deficiente': 'Deficiente',
+            'trabalhador': 'Trabalhador',
+            'avulso': 'Avulso',
+        };
+        return mapa[cat] ?? cat;
+    }
+
+    getTipoLabel(tipo: string): string {
+        return tipo === 'virtual' ? 'Cartão Virtual' : 'Cartão Físico';
+    }
+
+    getStatusCartaoLabel(card: CartaoModel): string {
+        const mapa: Record<string, string> = {
+            'active': 'Ativo',
+            'blocked': 'Bloqueado',
+            'pending': 'Pendente',
+            'expired': 'Expirado',
+            'available': 'Disponível',
+        };
+        return mapa[card.card_status] ?? card.card_status;
     }
 }

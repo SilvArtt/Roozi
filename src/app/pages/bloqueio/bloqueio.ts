@@ -1,4 +1,5 @@
-import { Component, inject } from '@angular/core';
+import { Component, DestroyRef, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
@@ -19,6 +20,7 @@ import {
 })
 export class Bloqueio {
   private fb = inject(FormBuilder);
+  private destroyRef = inject(DestroyRef);
   private blockRequestService = inject(BlockRequestService);
   private router = inject(Router);
 
@@ -37,6 +39,32 @@ export class Bloqueio {
     confirm_block: [false, Validators.requiredTrue],
   });
 
+  constructor() {
+    this.bloqueioForm.get('has_cpf')?.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((value) => {
+        if (value !== 'true') {
+          this.bloqueioForm.patchValue({ cpf: '' });
+        }
+      });
+
+    this.bloqueioForm.get('block_reason')?.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((value) => {
+        if (value !== 'other') {
+          this.bloqueioForm.patchValue({ other_reason: '' });
+        }
+      });
+  }
+
+  get mostrarInputCpf(): boolean {
+    return this.bloqueioForm.get('has_cpf')?.value === 'true';
+  }
+
+  get mostrarOtherReason(): boolean {
+    return this.bloqueioForm.get('block_reason')?.value === 'other';
+  }
+
   onSubmit() {
     if (this.loading) {
       console.warn('[Bloqueio] Clique ignorado — já processando');
@@ -54,13 +82,14 @@ export class Bloqueio {
     this.loading = true;
 
     const formValue = this.bloqueioForm.getRawValue();
+    const hasCpf = formValue.has_cpf === 'true';
 
     const payload = {
       card_code: formValue.card_code!,
       holder_name: formValue.holder_name!,
       card_type: formValue.card_type as CardType,
-      has_cpf_linked: formValue.has_cpf === 'true',
-      cpf: formValue.cpf ?? '',
+      has_cpf_linked: hasCpf,
+      cpf: hasCpf ? (formValue.cpf ?? '') : '',
       reason: formValue.block_reason as BlockReason,
       other_reason: formValue.other_reason ?? '',
       confirm_block: formValue.confirm_block!,

@@ -61,24 +61,27 @@
                                 <select id="card_type" formControlName="card_type">
                                     <option value="" disabled>Selecione o tipo do seu cartão</option>
                                     <option value="physical">Cartão Físico</option>
-                                    <option value="physical_avulso">Cartão Físico (Avulso)</option>
                                     <option value="virtual">Cartão Virtual</option>
                                 </select>
                             </div>
 
+                            
                             <div class="field">
-                                <label for="has_cpf">CPF Vinculado</label>
+                                <label for="has_cpf">Possui CPF vinculado ao cartão?</label>
                                 <select id="has_cpf" formControlName="has_cpf">
-                                    <option value="" disabled>Possui CPF Vinculado?</option>
+                                    <option value="" disabled>Selecione uma opção</option>
                                     <option value="true">Sim</option>
                                     <option value="false">Não</option>
                                 </select>
+                            </div>
 
-                                @if (bloqueioForm.get('has_cpf')?.value === 'true') {
+                            @if (mostrarInputCpf) {
+                            <div class="field">
+                                <label for="cpf">CPF</label>
                                 <input type="text" id="cpf" placeholder="000.000.000-00" maxlength="14"
                                     inputmode="numeric" formControlName="cpf">
-                                }
                             </div>
+                            }
 
                             <div class="field">
                                 <label for="block_reason">Motivo do Bloqueio</label>
@@ -97,21 +100,24 @@
                                     <option value="expired_card">Cartão vencido</option>
                                     <option value="other">Outro motivo</option>
                                 </select>
-
-                                @if (bloqueioForm.get('block_reason')?.value === 'other') {
-                                <input type="text" id="other_reason" placeholder="Informe o motivo específico"
-                                    formControlName="other_reason">
-                                }
                             </div>
+
+                            @if (mostrarOtherReason) {
+                            <div class="field">
+                                <label for="other_reason">Informe o motivo específico</label>
+                                <input type="text" id="other_reason" placeholder="Descreva o motivo"
+                                    formControlName="other_reason">
+                            </div>
+                            }
 
                         </div>
 
                         <div class="card-footer">
                             @if (erro) {
-                               <div class="alert alert-error">{{ erro }}</div>
+                            <div class="alert alert-error">{{ erro }}</div>
                             }
                             @if (sucesso) {
-                               <div class="alert alert-success">{{ sucesso }}</div>
+                            <div class="alert alert-success">{{ sucesso }}</div>
                             }
 
                             <div class="checkbox">

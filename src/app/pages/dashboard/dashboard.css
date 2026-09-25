@@ -780,6 +780,180 @@
     to { transform: translateY(0); opacity: 1; }
 }
 
+/* ═══════════════════════════════════════════════════════════
+   CARTÃO BLOQUEADO
+   ═══════════════════════════════════════════════════════════ */
+
+.card-item.card-bloqueado {
+    background: linear-gradient(135deg,
+            #8b2f2f 0%,
+            #5a1f1f 100%) !important;
+    border: 2px solid var(--color-error-main);
+}
+
+.card-bloqueado-aviso {
+    padding: 8px 12px;
+    background-color: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 8px;
+    font-size: var(--fs-xs);
+    font-weight: var(--fw-semibold);
+    color: #FFFFFF;
+    text-align: center;
+    margin-top: 4px;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   MODAL DETALHES
+   ═══════════════════════════════════════════════════════════ */
+
+.detalhes-status {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    border-radius: 10px;
+    background-color: var(--color-bg-subtle);
+    border: 1px solid var(--color-border);
+    margin-bottom: 1.25rem;
+}
+
+.detalhes-status-bloqueado {
+    background-color: var(--color-error-bg);
+    border-color: var(--color-error-main);
+}
+
+.detalhes-status-label {
+    font-size: var(--fs-sm);
+    color: var(--color-text-muted);
+    font-weight: var(--fw-medium);
+}
+
+.detalhes-status-valor {
+    font-size: var(--fs-sm);
+    font-weight: var(--fw-bold);
+    color: var(--color-success-main);
+    text-transform: uppercase;
+    letter-spacing: var(--ls-wide);
+}
+
+.detalhes-status-bloqueado .detalhes-status-valor {
+    color: var(--color-error-main);
+}
+
+.detalhes-info {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 1rem 1.25rem;
+    background-color: var(--color-bg-subtle);
+    border-radius: 10px;
+    margin-bottom: 1.5rem;
+}
+
+.detalhes-linha {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: var(--fs-sm);
+}
+
+.detalhes-label {
+    color: var(--color-text-muted);
+}
+
+.detalhes-valor {
+    color: var(--color-text-main);
+    font-weight: var(--fw-semibold);
+}
+
+.detalhes-saldo {
+    color: var(--color-primary-600);
+    font-size: var(--fs-base);
+    font-weight: var(--fw-bold);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   BOTÃO DANGER (DESVINCULAR)
+   ═══════════════════════════════════════════════════════════ */
+
+.modal-actions .btn-danger {
+    padding: 0.7rem 1.25rem;
+    background-color: var(--color-error-main);
+    color: #FFFFFF;
+    border: none;
+    border-radius: 8px;
+    font-family: var(--font-sans);
+    font-size: var(--fs-sm);
+    font-weight: var(--fw-semibold);
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.modal-actions .btn-danger:hover:not(:disabled) {
+    background-color: #a83a3a;
+}
+
+.modal-actions .btn-danger:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   AVISO DE CÓDIGO (MODAL REMOVER)
+   ═══════════════════════════════════════════════════════════ */
+
+.aviso-codigo {
+    padding: 1rem;
+    background-color: var(--color-warning-bg);
+    border: 1px solid var(--color-warning-main);
+    border-radius: 10px;
+    margin-bottom: 1rem;
+}
+
+.aviso-codigo-label {
+    font-size: var(--fs-xs);
+    color: var(--color-warning-main);
+    font-weight: var(--fw-semibold);
+    margin: 0 0 0.75rem 0;
+}
+
+.aviso-codigo .pedido-codigo {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 10px 12px;
+    background-color: var(--color-bg-surface);
+    border: 1px dashed var(--color-primary-500);
+    border-radius: 8px;
+}
+
+.aviso-codigo .codigo-valor {
+    font-family: var(--font-mono);
+    font-size: var(--fs-base);
+    font-weight: var(--fw-bold);
+    color: var(--color-primary-600);
+    letter-spacing: 0.05em;
+}
+
+.aviso-codigo .btn-copiar {
+    padding: 6px 12px;
+    font-size: var(--fs-xs);
+    font-weight: var(--fw-semibold);
+    background-color: var(--color-bg-surface);
+    color: var(--color-text-main);
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.aviso-codigo .btn-copiar:hover {
+    border-color: var(--color-primary-500);
+    color: var(--color-primary-600);
+}
+
 /* --------------------------------------------------------------------------
    8. RESPONSIVO
    -------------------------------------------------------------------------- */

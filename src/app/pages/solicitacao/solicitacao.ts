@@ -1,4 +1,5 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
@@ -16,7 +17,6 @@ import {
     CardType,
     PassengerCategory,
     DeliveryType,
-    DeliveryStatus,
     RequisicaoPayLoad,
 } from '@core/models';
 
@@ -28,6 +28,7 @@ import {
 })
 export class Solicitacao implements OnInit {
     private fb = inject(FormBuilder);
+    private destroyRef = inject(DestroyRef);
     private cepService = inject(CepService);
     private regionService = inject(RegionService);
     private operatorService = inject(OperatorService);
@@ -67,8 +68,9 @@ export class Solicitacao implements OnInit {
         operator_id: ['', Validators.required],
         card_type: ['', Validators.required],
         passenger_category: ['', Validators.required],
-        cpf: [''],
-        delivery_type: ['', Validators.required],
+        has_cpf: ['', Validators.required],   
+        cpf: [''],                           
+        delivery_type: [''],                  
         station: [''],
         zip_code: [''],
         address_number: [''],
@@ -80,10 +82,59 @@ export class Solicitacao implements OnInit {
         lgpd: [false, Validators.requiredTrue],
     });
 
+    // ═══════════════════════════════════════════════════════════
+    // GETTERS AUXILIARES (pro template)
+    // ═══════════════════════════════════════════════════════════
+
+    get cardType(): string {
+        return this.solicitacaoForm.get('card_type')?.value ?? '';
+    }
+
+    get passengerCategory(): string {
+        return this.solicitacaoForm.get('passenger_category')?.value ?? '';
+    }
+
+    get deliveryType(): string {
+        return this.solicitacaoForm.get('delivery_type')?.value ?? '';
+    }
+
+    get hasCpf(): string {
+        return this.solicitacaoForm.get('has_cpf')?.value ?? '';
+    }
+
+    get isVirtual(): boolean {
+        return this.cardType === CardType.VIRTUAL;
+    }
+
+    get isAvulso(): boolean {
+        return this.passengerCategory === PassengerCategory.AVULSO;
+    }
+
+    /** Mostra bloco de CPF só se não for avulso E o usuário escolheu "Sim" */
+    get mostrarInputCpf(): boolean {
+        return !this.isAvulso && this.hasCpf === 'true';
+    }
+
+    /** Mostra pergunta de CPF só se NÃO for avulso */
+    get mostrarPerguntaCpf(): boolean {
+        return !this.isAvulso;
+    }
+
+    /** Mostra bloco de entrega só se NÃO for virtual */
+    get mostrarEntrega(): boolean {
+        return !this.isVirtual && !!this.cardType;
+    }
+
+    // ═══════════════════════════════════════════════════════════
+    // CICLO DE VIDA
+    // ═══════════════════════════════════════════════════════════
+
     ngOnInit() {
         this.carregarRegioes();
         this.escutarMudancaRegiao();
         this.escutarMudancaOperadora();
+        this.escutarMudancaCardType();
+        this.escutarMudancaCategoria();
         this.escutarMudancaDeliveryType();
         this.escutarCep();
     }
@@ -109,30 +160,34 @@ export class Solicitacao implements OnInit {
     // ═══════════════════════════════════════════════════════════
 
     private escutarMudancaRegiao() {
-        this.solicitacaoForm.get('region_id')?.valueChanges.subscribe((regionId) => {
-            // Limpa campos dependentes
-            this.solicitacaoForm.patchValue({
-                operator_id: '',
-                card_type: '',
-                passenger_category: '',
+        this.solicitacaoForm.get('region_id')?.valueChanges
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe((regionId) => {
+                this.solicitacaoForm.patchValue({
+                    operator_id: '',
+                    card_type: '',
+                    passenger_category: '',
+                    has_cpf: '',
+                    cpf: '',
+                    delivery_type: '',
+                });
+
+                this.operadoras = [];
+                this.tiposDisponiveis = [];
+                this.categoriasDisponiveis = [];
+
+                if (!regionId) return;
+
+                this.operatorService.getOperatorsByRegion(regionId).pipe(take(1)).subscribe({
+                    next: (ops) => {
+                        this.operadoras = ops;
+                    },
+                    error: (err) => {
+                        console.error('Erro ao carregar operadoras:', err);
+                        this.erro = 'Erro ao carregar operadoras.';
+                    },
+                });
             });
-
-            this.operadoras = [];
-            this.tiposDisponiveis = [];
-            this.categoriasDisponiveis = [];
-
-            if (!regionId) return;
-
-            this.operatorService.getOperatorsByRegion(regionId).pipe(take(1)).subscribe({
-                next: (ops) => {
-                    this.operadoras = ops;
-                },
-                error: (err) => {
-                    console.error('Erro ao carregar operadoras:', err);
-                    this.erro = 'Erro ao carregar operadoras.';
-                },
-            });
-        });
     }
 
     // ═══════════════════════════════════════════════════════════
@@ -140,33 +195,68 @@ export class Solicitacao implements OnInit {
     // ═══════════════════════════════════════════════════════════
 
     private escutarMudancaOperadora() {
-        this.solicitacaoForm.get('operator_id')?.valueChanges.subscribe((operatorId) => {
-            // Limpa campos dependentes
-            this.solicitacaoForm.patchValue({
-                card_type: '',
-                passenger_category: '',
+        this.solicitacaoForm.get('operator_id')?.valueChanges
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe((operatorId) => {
+                this.solicitacaoForm.patchValue({
+                    card_type: '',
+                    passenger_category: '',
+                    has_cpf: '',
+                    cpf: '',
+                    delivery_type: '',
+                });
+
+                this.tiposDisponiveis = [];
+                this.categoriasDisponiveis = [];
+
+                if (!operatorId) return;
+
+                const op = this.operadoras.find(o => o.id === operatorId);
+                if (!op) return;
+
+                this.tiposDisponiveis = (op.available_card_types || []).map(t => ({
+                    valor: t,
+                    label: this.tiposLabel[t] ?? t,
+                }));
+
+                this.categoriasDisponiveis = (op.available_categories || []).map(c => ({
+                    valor: c,
+                    label: this.categoriasLabel[c] ?? c,
+                }));
             });
+    }
 
-            this.tiposDisponiveis = [];
-            this.categoriasDisponiveis = [];
+    // ═══════════════════════════════════════════════════════════
+    // CASCATA: Card Type → limpa delivery se virtual
+    // ═══════════════════════════════════════════════════════════
 
-            if (!operatorId) return;
+    private escutarMudancaCardType() {
+        this.solicitacaoForm.get('card_type')?.valueChanges
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe((type) => {
+                if (type === CardType.VIRTUAL) {
+                    this.limparCamposEntrega();
+                }
+                // Se virou físico, o campo delivery_type volta a ser obrigatório
+                this.atualizarValidadoresDelivery();
+            });
+    }
 
-            const op = this.operadoras.find(o => o.id === operatorId);
-            if (!op) return;
+    // ═══════════════════════════════════════════════════════════
+    // CASCATA: Categoria → avulso limpa CPF
+    // ═══════════════════════════════════════════════════════════
 
-            // Popula tipos
-            this.tiposDisponiveis = (op.available_card_types || []).map(t => ({
-                valor: t,
-                label: this.tiposLabel[t] ?? t,
-            }));
-
-            // Popula categorias
-            this.categoriasDisponiveis = (op.available_categories || []).map(c => ({
-                valor: c,
-                label: this.categoriasLabel[c] ?? c,
-            }));
-        });
+    private escutarMudancaCategoria() {
+        this.solicitacaoForm.get('passenger_category')?.valueChanges
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe((cat) => {
+                if (cat === PassengerCategory.AVULSO) {
+                    this.solicitacaoForm.patchValue({
+                        has_cpf: '',
+                        cpf: '',
+                    });
+                }
+            });
     }
 
     // ═══════════════════════════════════════════════════════════
@@ -174,22 +264,53 @@ export class Solicitacao implements OnInit {
     // ═══════════════════════════════════════════════════════════
 
     private escutarMudancaDeliveryType() {
-        this.solicitacaoForm.get('delivery_type')?.valueChanges.subscribe((type) => {
-            if (type === 'pickup') {
-                this.solicitacaoForm.patchValue({
-                    zip_code: '',
-                    address_number: '',
-                    street: '',
-                    complement: '',
-                    neighborhood: '',
-                    city: '',
-                    state: '',
-                });
-            } else if (type === 'home_delivery') {
-                this.solicitacaoForm.patchValue({
-                    station: '',
-                });
-            }
+        this.solicitacaoForm.get('delivery_type')?.valueChanges
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe((type) => {
+                if (type === 'pickup') {
+                    this.solicitacaoForm.patchValue({
+                        zip_code: '',
+                        address_number: '',
+                        street: '',
+                        complement: '',
+                        neighborhood: '',
+                        city: '',
+                        state: '',
+                    });
+                } else if (type === 'home_delivery') {
+                    this.solicitacaoForm.patchValue({
+                        station: '',
+                    });
+                }
+            });
+    }
+
+    // ═══════════════════════════════════════════════════════════
+    // VALIDADORES CONDICIONAIS
+    // ═══════════════════════════════════════════════════════════
+
+    private atualizarValidadoresDelivery() {
+        const deliveryCtrl = this.solicitacaoForm.get('delivery_type');
+
+        if (this.isVirtual) {
+            deliveryCtrl?.clearValidators();
+        } else {
+            deliveryCtrl?.setValidators([Validators.required]);
+        }
+        deliveryCtrl?.updateValueAndValidity();
+    }
+
+    private limparCamposEntrega() {
+        this.solicitacaoForm.patchValue({
+            delivery_type: '',
+            station: '',
+            zip_code: '',
+            address_number: '',
+            street: '',
+            complement: '',
+            neighborhood: '',
+            city: '',
+            state: '',
         });
     }
 
@@ -215,42 +336,50 @@ export class Solicitacao implements OnInit {
         this.loading = true;
 
         const formValue = this.solicitacaoForm.getRawValue();
-        const deliveryType = formValue.delivery_type as DeliveryType;
+        const cardType = formValue.card_type as CardType;
+        const isVirtual = cardType === CardType.VIRTUAL;
+        const isAvulso = formValue.passenger_category === PassengerCategory.AVULSO;
+        const hasCpf = formValue.has_cpf === 'true' && !isAvulso;
 
-        // Monta o payload
         const payload: RequisicaoPayLoad = {
             user_id: uid,
             area_id: formValue.region_id!,
             operator_id: formValue.operator_id!,
-            card_type: formValue.card_type as CardType,
+            card_type: cardType,
             passenger_category: formValue.passenger_category as PassengerCategory,
-            cpf: formValue.cpf ?? '',
-            delivery_type: deliveryType,
+            has_cpf_linked: hasCpf,
+            cpf: hasCpf ? (formValue.cpf ?? '') : undefined,
             lgpd_consent: formValue.lgpd!,
         };
 
-        // Se for pickup
-        if (deliveryType === 'pickup') {
-            payload.station = formValue.station ?? '';
-        }
+        
+        if (!isVirtual) {
+            const deliveryType = formValue.delivery_type as DeliveryType;
+            payload.delivery_type = deliveryType;
 
-        // Se for home_delivery → monta o address
-        if (deliveryType === 'home_delivery') {
-            payload.address = {
-                cep: formValue.zip_code ?? '',
-                street: formValue.street ?? '',
-                number: formValue.address_number ?? '',
-                complement: formValue.complement ?? '',
-                neighborhood: formValue.neighborhood ?? '',
-                city: formValue.city ?? '',
-                state: formValue.state ?? '',
-            };
+            if (deliveryType === 'pickup') {
+                payload.station = formValue.station ?? '';
+            }
+
+            if (deliveryType === 'home_delivery') {
+                payload.address = {
+                    cep: formValue.zip_code ?? '',
+                    street: formValue.street ?? '',
+                    number: formValue.address_number ?? '',
+                    complement: formValue.complement ?? '',
+                    neighborhood: formValue.neighborhood ?? '',
+                    city: formValue.city ?? '',
+                    state: formValue.state ?? '',
+                };
+            }
         }
 
         this.cardRequestService.createCardRequest(payload).pipe(take(1)).subscribe({
-            next: (req) => {
+            next: () => {
                 this.loading = false;
-                this.sucesso = 'Solicitação enviada! A operadora vai analisar em breve.';
+                this.sucesso = isVirtual
+                    ? 'Solicitação enviada! Quando a operadora aprovar, seu cartão virtual estará disponível no dashboard.'
+                    : 'Solicitação enviada! A operadora vai analisar em breve.';
 
                 setTimeout(() => {
                     this.router.navigate(['/dashboard']);
@@ -270,6 +399,7 @@ export class Solicitacao implements OnInit {
 
     private escutarCep() {
         this.solicitacaoForm.get('zip_code')?.valueChanges.pipe(
+            takeUntilDestroyed(this.destroyRef),
             debounceTime(500),
             distinctUntilChanged(),
             filter((cep) => !!cep && cep.replace(/\D/g, '').length === 8),

@@ -19,7 +19,7 @@
             </div>
             } @else {
             @for (card of cartoes; track card.id) {
-            <div class="card-item">
+            <div class="card-item" [class.card-bloqueado]="isBloqueado(card)">
                 <div class="card-item-header">
                     <span class="card-item-type">
                         {{ card.card_type === 'physical' ? 'Cartão Físico' : 'Cartão Virtual' }}
@@ -37,9 +37,17 @@
                     <span class="balance-value">{{ formatarSaldo(card.balance) }}</span>
                 </div>
 
+                @if (isBloqueado(card)) {
+                <div class="card-bloqueado-aviso">
+                    ⚠️ Cartão bloqueado
+                </div>
+                }
+
                 <div class="card-item-actions">
                     <a routerLink="/recarga" class="btn-card-action btn-recharge">Recarregar</a>
-                    <button type="button" class="btn-card-action btn-details">Detalhes</button>
+                    <button type="button" class="btn-card-action btn-details" (click)="abrirDetalhes(card)">
+                        Detalhes
+                    </button>
                 </div>
             </div>
             }
@@ -52,7 +60,7 @@
         </div>
     </section>
 
-    <!-- ⭐ SEÇÃO: MEUS PEDIDOS -->
+    <!-- SEÇÃO: MEUS PEDIDOS -->
     @if (pedidos.length > 0) {
     <section class="pedidos-panel-container">
         <div class="pedidos-header">
@@ -79,7 +87,6 @@
                     </span>
                 </div>
 
-                <!-- Se foi aprovado e tem código -->
                 @if (pedido.status === 'processing' && pedido.card_code) {
                 @if (pedido.is_virtual) {
                 <div class="pedido-acao-virtual">
@@ -248,6 +255,140 @@
                     </button>
                 </div>
             </form>
+        </div>
+    </div>
+</div>
+}
+
+<!-- MODAL: DETALHES DO CARTÃO -->
+@if (modalDetalhesAberto && cartaoSelecionado) {
+<div class="modal-overlay" (click)="fecharDetalhes()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+            <h3>Detalhes do Cartão</h3>
+            <button type="button" class="close-btn" (click)="fecharDetalhes()">×</button>
+        </div>
+
+        <div class="modal-body">
+
+            <!-- Status do cartão -->
+            <div class="detalhes-status" [class.detalhes-status-bloqueado]="isBloqueado(cartaoSelecionado)">
+                <span class="detalhes-status-label">Status:</span>
+                <span class="detalhes-status-valor">
+                    {{ getStatusCartaoLabel(cartaoSelecionado) }}
+                </span>
+            </div>
+
+            @if (isBloqueado(cartaoSelecionado)) {
+            <div class="modal-alert modal-alert-error">
+                ⚠️ Este cartão está bloqueado.
+            </div>
+            }
+
+            <!-- Infos read-only -->
+            <div class="detalhes-info">
+                <div class="detalhes-linha">
+                    <span class="detalhes-label">Tipo:</span>
+                    <span class="detalhes-valor">{{ getTipoLabel(cartaoSelecionado.card_type) }}</span>
+                </div>
+                <div class="detalhes-linha">
+                    <span class="detalhes-label">Operadora:</span>
+                    <span class="detalhes-valor">{{ cartaoSelecionado.operator_name || 'Operadora' }}</span>
+                </div>
+                <div class="detalhes-linha">
+                    <span class="detalhes-label">Categoria:</span>
+                    <span class="detalhes-valor">{{ getCategoriaLabel(cartaoSelecionado.passenger_category) }}</span>
+                </div>
+                <div class="detalhes-linha">
+                    <span class="detalhes-label">Saldo:</span>
+                    <span class="detalhes-valor detalhes-saldo">{{ formatarSaldo(cartaoSelecionado.balance) }}</span>
+                </div>
+            </div>
+
+            <!-- Form editável -->
+            <form [formGroup]="detalhesForm" (ngSubmit)="salvarDetalhes()">
+                <div class="field">
+                    <label for="det_nickname">Apelido</label>
+                    <input id="det_nickname" type="text" placeholder="Ex: Meu cartão do dia a dia"
+                        formControlName="nickname">
+                </div>
+
+                <div class="field">
+                    <label for="det_card_code">Código do Cartão</label>
+                    <input id="det_card_code" type="text" placeholder="Código do cartão" formControlName="card_code"
+                        autocomplete="off">
+                    @if (saldoCartaoSelecionado > 0) {
+                    <small class="field-hint">
+                        ⚠️ Não é possível trocar o código enquanto houver saldo.
+                    </small>
+                    } @else {
+                    <small class="field-hint">
+                        Trocar o código vai desvincular este cartão e vincular o novo.
+                    </small>
+                    }
+                </div>
+
+                @if (erroDetalhes) {
+                <div class="modal-alert modal-alert-error">{{ erroDetalhes }}</div>
+                }
+
+                @if (sucessoDetalhes) {
+                <div class="modal-alert modal-alert-success">{{ sucessoDetalhes }}</div>
+                }
+
+                <div class="modal-actions">
+                    <button type="button" class="btn-danger" (click)="abrirRemover()">
+                        Desvincular
+                    </button>
+                    <button type="button" class="btn-secondary" (click)="fecharDetalhes()">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="btn-primary" [disabled]="salvandoDetalhes">
+                        {{ salvandoDetalhes ? 'Salvando...' : 'Salvar' }}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+}
+
+<!-- MODAL: CONFIRMAR REMOÇÃO -->
+@if (modalRemoverAberto && cartaoSelecionado) {
+<div class="modal-overlay" (click)="fecharRemover()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+            <h3>Desvincular Cartão</h3>
+            <button type="button" class="close-btn" (click)="fecharRemover()">×</button>
+        </div>
+
+        <div class="modal-body">
+            <p class="modal-hint">
+                Tem certeza que deseja desvincular este cartão?
+            </p>
+
+            <div class="aviso-codigo">
+                <p class="aviso-codigo-label">Guarde o código abaixo caso queira adicionar novamente:</p>
+                <div class="pedido-codigo">
+                    <code class="codigo-valor">{{ cartaoSelecionado.card_code }}</code>
+                    <button type="button" class="btn-copiar" (click)="copiarCodigo(cartaoSelecionado.card_code)">
+                        📋 Copiar
+                    </button>
+                </div>
+            </div>
+
+            @if (erroRemover) {
+            <div class="modal-alert modal-alert-error">{{ erroRemover }}</div>
+            }
+
+            <div class="modal-actions">
+                <button type="button" class="btn-secondary" (click)="fecharRemover()">
+                    Cancelar
+                </button>
+                <button type="button" class="btn-danger" [disabled]="removendo" (click)="confirmarRemover()">
+                    {{ removendo ? 'Removendo...' : 'Sim, desvincular' }}
+                </button>
+            </div>
         </div>
     </div>
 </div>

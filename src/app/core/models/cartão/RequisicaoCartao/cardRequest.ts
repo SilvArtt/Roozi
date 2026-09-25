@@ -8,12 +8,16 @@ export interface RequisicaoCartaoModel {
     area_id: string;
     card_type: CardType;
     passenger_category: PassengerCategory;
+    has_cpf_linked:boolean;
     cpf?: string;
-    delivery_type: DeliveryType;
+    delivery_type?: DeliveryType;
     station?: string;
     address?: DeliveryAddress;
     status: DeliveryStatus;
+    card_code?: string;
+    card_id?: string;
     created_at: Date;
+    updated_at?: Date;
 }
 
 export interface RequisicaoPayLoad {
@@ -22,8 +26,9 @@ export interface RequisicaoPayLoad {
     operator_id:string;
     card_type: CardType;
     passenger_category: PassengerCategory;
+    has_cpf_linked:boolean;
     cpf?: string;
-    delivery_type: DeliveryType;
+    delivery_type?: DeliveryType;
     station?: string;
     address?: DeliveryAddress;
     lgpd_consent: boolean;

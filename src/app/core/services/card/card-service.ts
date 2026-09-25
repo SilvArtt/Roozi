@@ -6,6 +6,7 @@ import {
     doc,
     docData,
     query,
+    runTransaction,
     updateDoc,
     where,
 } from '@angular/fire/firestore';
@@ -119,6 +120,115 @@ export class CardService {
                                 ...updates,
                                 ...newCardUpdate,
                             } as CartaoModel))
+                        );
+                    })
+                );
+            })
+        );
+    }
+
+    updateCardNickname(cardId: string, nickname: string): Observable<void> {
+        const cardRef = doc(this.firestore, `cards/${cardId}`);
+        return from(updateDoc(cardRef, {
+            nickname: nickname ?? '',
+            updated_at: new Date(),
+        }));
+    }
+
+    trocarCartao(
+        cardIdAtual: string,
+        novoCardCode: string,
+        uid: string
+    ): Observable<CartaoModel> {
+        if (!uid) {
+            return throwError(() => new Error('Usuário não logado'));
+        }
+
+        // 1. Verifica o cartão atual (não pode ter saldo)
+        return this.getCardById(cardIdAtual).pipe(
+            switchMap((cardAtual) => {
+                if (!cardAtual) {
+                    return throwError(() => new Error('Cartão atual não encontrado'));
+                }
+
+                if ((cardAtual.balance ?? 0) > 0) {
+                    return throwError(() => new Error(
+                        'Não é possível trocar o código de um cartão com saldo. Zere o saldo primeiro.'
+                    ));
+                }
+
+                // 2. Busca o novo cartão
+                return this.getCardByCode(novoCardCode).pipe(
+                    switchMap((novoCard) => {
+                        if (!novoCard) {
+                            return throwError(() => new Error('Novo cartão não encontrado'));
+                        }
+
+                        if (novoCard.id === cardIdAtual) {
+                            return throwError(() => new Error('O novo código é igual ao atual'));
+                        }
+
+                        if (novoCard.user_id) {
+                            return throwError(() => new Error('Novo cartão já está vinculado a outro usuário'));
+                        }
+
+                        if (novoCard.card_status === CardStatus.BLOQUEADO) {
+                            return throwError(() => new Error('Novo cartão está bloqueado'));
+                        }
+
+                        // 3. Transaction: desvincula antigo + vincula novo
+                        return from(
+                            runTransaction(this.firestore, async (transaction) => {
+                                const oldCardRef = doc(this.firestore, `cards/${cardIdAtual}`);
+                                const newCardRef = doc(this.firestore, `cards/${novoCard.id}`);
+
+                                // Re-lê os dois dentro da transaction
+                                const oldSnap = await transaction.get(oldCardRef);
+                                const newSnap = await transaction.get(newCardRef);
+
+                                if (!oldSnap.exists()) {
+                                    throw new Error('Cartão atual não encontrado');
+                                }
+
+                                if (!newSnap.exists()) {
+                                    throw new Error('Novo cartão não encontrado');
+                                }
+
+                                const oldData = oldSnap.data() as CartaoModel;
+                                const newData = newSnap.data() as CartaoModel;
+
+                                if ((oldData.balance ?? 0) > 0) {
+                                    throw new Error('Cartão atual tem saldo. Não é possível trocar.');
+                                }
+
+                                if (newData.user_id) {
+                                    throw new Error('Novo cartão já está vinculado');
+                                }
+
+                                if (newData.card_status === CardStatus.BLOQUEADO) {
+                                    throw new Error('Novo cartão está bloqueado');
+                                }
+
+                                // Desvincula o antigo
+                                transaction.update(oldCardRef, {
+                                    user_id: '',
+                                    nickname: '',
+                                    card_status: CardStatus.DISPONIVEL,
+                                    updated_at: new Date(),
+                                });
+
+                                // Vincula o novo (mantém o nickname do antigo)
+                                const novoNickname = oldData.nickname || '';
+                                const newUpdate = {
+                                    user_id: uid,
+                                    nickname: novoNickname,
+                                    card_status: CardStatus.ATIVO,
+                                    updated_at: new Date(),
+                                };
+                                transaction.update(newCardRef, newUpdate);
+
+                                return { ...newData, ...newUpdate } as CartaoModel;
+                            })
                         );
                     })
                 );
