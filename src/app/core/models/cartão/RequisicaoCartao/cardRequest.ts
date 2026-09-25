@@ -28,3 +28,25 @@ export interface RequisicaoPayLoad {
     address?: DeliveryAddress;
     lgpd_consent: boolean;
 }
+
+
+export enum PedidoStatus {
+    AGUARDANDO_APROVACAO = 'pending_payment',
+    APROVADO = 'processing',
+    ENTREGUE = 'shipped',
+    CANCELADO = 'cancelled',
+}
+
+
+export interface MeuPedido {
+    id: string;
+    operator_id: string;
+    operator_name: string;      
+    card_type: CardType;
+    passenger_category: PassengerCategory;
+    status: PedidoStatus;
+    card_code?: string;
+    card_id?:string;         
+    is_virtual: boolean;
+    created_at: Date;
+}

@@ -5,6 +5,15 @@
             <p>Roozi</p>
         </a>
 
+        @if (user$ | async; as user) {
+            <div class="user-info">
+                <span class="user-greeting">Olá,</span>
+                <span class="user-name">
+                    {{ user.type === 'operator' ? user.company_name : user.username }}
+                </span>
+            </div>
+        }
+
         <input type="checkbox" id="menu-toggle" class="menu-toggle-checkbox">
         <label for="menu-toggle" class="hamburger-btn" aria-label="Abrir Menu">
             <span></span>

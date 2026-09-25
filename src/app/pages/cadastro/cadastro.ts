@@ -87,7 +87,7 @@ export class Cadastro {
         next: (user) => {
           this.loading = false;
           console.log('Passageiro cadastrado:', user);
-          // ✅ Passageiro vai pro /dashboard
+      
           this.router.navigate(['/dashboard']);
         },
         error: (err) => {
@@ -122,7 +122,7 @@ export class Cadastro {
         next: (user) => {
           this.loading = false;
           console.log('Operadora cadastrada:', user);
-          // ✅ Operadora vai pro /operadora/dashboard
+       
           this.router.navigate(['/operadora/dashboard']);
         },
         error: (err) => {

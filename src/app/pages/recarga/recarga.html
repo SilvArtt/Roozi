@@ -10,11 +10,21 @@
                     <h2>Informações</h2>
                 </div>
                 <div class="card-body">
-                    <h3>Como funciona a recarga</h3>
-                    <p>Selecione o cartão que deseja recarregar, escolha um valor e finalize o pagamento.
-                        O saldo é liberado para uso imediatamente após a confirmação.</p>
-                    <p>Recargas via Pix são processadas na hora. Boletos podem levar até 3 dias úteis
-                        para compensar.</p>
+                    <h3>Como funciona</h3>
+                    <p>
+                        Selecione o <strong>cartão</strong> que deseja recarregar, escolha um
+                        valor entre <strong>R$ 5,00 e R$ 500,00</strong> e defina a forma de
+                        pagamento.
+                    </p>
+                    <p>
+                        Recargas via <strong>Pix</strong> são processadas na hora — o saldo fica
+                        disponível imediatamente. <strong>Boleto</strong> pode levar até 3 dias
+                        úteis para compensar.
+                    </p>
+                    <p>
+                        O saldo é liberado para uso assim que o pagamento é confirmado e fica
+                        disponível pra todas as linhas da operadora vinculada ao cartão.
+                    </p>
                 </div>
             </div>
         </div>
@@ -37,7 +47,7 @@
                                 <option value="" disabled>Selecione o cartão</option>
                                 @for (card of meusCartoes; track card.id) {
                                 <option [value]="card.id">
-                                    {{ card.nickname || card.card_code }} — R$ {{ card.balance | number:'1.2-2' }}
+                                    {{ card.nickname || card.card_code }} — {{ formatarSaldo(card.balance) }}
                                 </option>
                                 }
                             </select>
@@ -92,3 +102,107 @@
     </form>
 
 </main>
+
+<!-- ⭐ MODAL DE PAGAMENTO -->
+@if (modalAberto) {
+<div class="modal-overlay" (click)="fecharModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+
+        <div class="modal-header">
+            <h3>Confirmar Pagamento</h3>
+            <button type="button" class="close-btn" [disabled]="processandoPagamento" (click)="fecharModal()">×</button>
+        </div>
+
+        <div class="modal-body">
+
+            <!-- Resumo -->
+            <div class="resumo-recarga">
+                <div class="resumo-linha">
+                    <span class="resumo-label">Cartão:</span>
+                    <span class="resumo-valor">{{ resumoRecarga.cardLabel }}</span>
+                </div>
+                <div class="resumo-linha">
+                    <span class="resumo-label">Valor:</span>
+                    <span class="resumo-valor resumo-valor-destaque">
+                        {{ formatarSaldo(resumoRecarga.amount) }}
+                    </span>
+                </div>
+                <div class="resumo-linha">
+                    <span class="resumo-label">Método:</span>
+                    <span class="resumo-valor">{{ getNomeMetodo(resumoRecarga.paymentMethod) }}</span>
+                </div>
+            </div>
+
+            <!-- Pix -->
+            @if (resumoRecarga.paymentMethod === 'pix') {
+            <div class="pagamento-metodo">
+                <p class="metodo-instrucao">
+                    Escaneie o QR code abaixo no app do seu banco:
+                </p>
+                <div class="qr-code-fake">
+                    <div class="qr-code-inner">
+                        📱 QR CODE
+                    </div>
+                </div>
+                <p class="metodo-codigo">
+                    Pix Copia e Cola: <code>00020126360014BR.GOV.BCB.PIX...</code>
+                </p>
+            </div>
+            }
+
+            <!-- Cartão de crédito/débito -->
+            @if (resumoRecarga.paymentMethod === 'credit-card' || resumoRecarga.paymentMethod === 'debit-card') {
+            <div class="pagamento-metodo">
+                <p class="metodo-instrucao">
+                    Preencha os dados do seu cartão:
+                </p>
+                <div class="field">
+                    <label>Número do cartão</label>
+                    <input type="text" placeholder="0000 0000 0000 0000" maxlength="19">
+                </div>
+                <div class="field-row">
+                    <div class="field">
+                        <label>Validade</label>
+                        <input type="text" placeholder="MM/AA" maxlength="5">
+                    </div>
+                    <div class="field">
+                        <label>CVV</label>
+                        <input type="text" placeholder="000" maxlength="3">
+                    </div>
+                </div>
+            </div>
+            }
+
+            <!-- Boleto -->
+            @if (resumoRecarga.paymentMethod === 'boleto') {
+            <div class="pagamento-metodo">
+                <p class="metodo-instrucao">
+                    Boleto gerado. Vence em 3 dias úteis.
+                </p>
+                <div class="boleto-codigo">
+                    <code>34191.79001 01043.510047 91020.150008 5 91270000050000</code>
+                </div>
+                <p class="metodo-aviso">
+                    ⚠️ O saldo só será liberado após a confirmação do pagamento (até 3 dias úteis).
+                </p>
+            </div>
+            }
+
+            @if (erro) {
+            <div class="modal-alert modal-alert-error">{{ erro }}</div>
+            }
+
+        </div>
+
+        <div class="modal-footer">
+            <button type="button" class="btn-secondary" [disabled]="processandoPagamento" (click)="fecharModal()">
+                Cancelar
+            </button>
+            <button type="button" class="btn-primary" [disabled]="processandoPagamento" (click)="confirmarPagamento()">
+                {{ processandoPagamento ? 'Processando...' : 'Já Paguei' }}
+            </button>
+        </div>
+
+    </div>
+</div>
+}

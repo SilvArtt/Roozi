@@ -6,46 +6,109 @@
     <section class="card-sec-container">
         <div class="sec-header">
             <h2>Seus Cartões</h2>
-            <button class="btn-add-card">+ Adicionar Cartão</button>
-        </div>
-
-        <div class="filter">
-            <select name="card_type_filter" id="card-type-filter">
-                <option value="">Todos os tipos</option>
-                <option value="physical">Cartão Físico</option>
-                <option value="virtual">Cartão Virtual</option>
-            </select>
+            <button class="btn-add-card" (click)="abrirModal()">+ Adicionar Cartão</button>
         </div>
 
         <div class="cards-wrapper">
+            @if (carregandoCartoes) {
+            <p class="loading">Carregando cartões...</p>
+            } @else if (cartoes.length === 0) {
+            <div class="empty-cards">
+                <p>Você ainda não tem cartões vinculados.</p>
+                <button class="btn-add-card" (click)="abrirModal()">+ Adicionar meu primeiro cartão</button>
+            </div>
+            } @else {
+            @for (card of cartoes; track card.id) {
             <div class="card-item">
                 <div class="card-item-header">
-                    <span class="card-item-type">Cartão Físico</span>
-                    <span class="card-item-operator">Operadora Transporte</span>
+                    <span class="card-item-type">
+                        {{ card.card_type === 'physical' ? 'Cartão Físico' : 'Cartão Virtual' }}
+                    </span>
+                    <span class="card-item-operator">{{ card.operator_name || 'Operadora' }}</span>
                 </div>
 
                 <div class="card-item-body">
-                    <p class="card-item-nickname">Meu Cartão Diário</p>
-                    <p class="card-item-number">•••• •••• •••• 4821</p>
+                    <p class="card-item-nickname">{{ card.nickname || 'Sem apelido' }}</p>
+                    <p class="card-item-number">{{ card.masked_number }}</p>
                 </div>
 
                 <div class="card-item-balance">
                     <span class="balance-label">Saldo disponível</span>
-                    <span class="balance-value">R$ 42,80</span>
+                    <span class="balance-value">{{ formatarSaldo(card.balance) }}</span>
                 </div>
 
                 <div class="card-item-actions">
-                    <a href="/recarga?cardId=1" class="btn-card-action btn-recharge">Recarregar</a>
+                    <a routerLink="/recarga" class="btn-card-action btn-recharge">Recarregar</a>
                     <button type="button" class="btn-card-action btn-details">Detalhes</button>
                 </div>
             </div>
+            }
 
-            <div class="add-card-slot">
+            <div class="add-card-slot" (click)="abrirModal()">
                 <div class="plus-icon">+</div>
                 <p>Adicionar Novo Cartão</p>
             </div>
+            }
         </div>
     </section>
+
+    <!-- ⭐ SEÇÃO: MEUS PEDIDOS -->
+    @if (pedidos.length > 0) {
+    <section class="pedidos-panel-container">
+        <div class="pedidos-header">
+            <h2>Meus Pedidos</h2>
+        </div>
+
+        <div class="pedidos-list">
+            @for (pedido of pedidos; track pedido.id) {
+            <div class="pedido-card" [class.pedido-aprovado]="pedido.status === 'processing'">
+                <div class="pedido-icon">
+                    {{ pedido.is_virtual ? '💳' : '🎫' }}
+                </div>
+
+                <div class="pedido-info">
+                    <h4>
+                        {{ pedido.is_virtual ? 'Cartão Virtual' : 'Cartão Físico' }}
+                        — {{ pedido.operator_name }}
+                    </h4>
+                    <p class="pedido-categoria">
+                        Categoria: {{ pedido.passenger_category }}
+                    </p>
+                    <span class="pedido-status" [attr.data-status]="pedido.status">
+                        {{ getStatusLabel(pedido) }}
+                    </span>
+                </div>
+
+                <!-- Se foi aprovado e tem código -->
+                @if (pedido.status === 'processing' && pedido.card_code) {
+                @if (pedido.is_virtual) {
+                <div class="pedido-acao-virtual">
+                    <p class="pedido-aviso">
+                        ✅ Cartão virtual ativo! Já está disponível acima.
+                    </p>
+                </div>
+                } @else {
+                <div class="pedido-acao-fisico">
+                    <div class="pedido-codigo">
+                        <span class="codigo-label">Código:</span>
+                        <code class="codigo-valor">{{ pedido.card_code }}</code>
+                    </div>
+                    <div class="pedido-botoes">
+                        <button type="button" class="btn-copiar" (click)="copiarCodigo(pedido.card_code!)">
+                            📋 Copiar
+                        </button>
+                        <button type="button" class="btn-adicionar" (click)="adicionarComCodigo(pedido.card_code!)">
+                            + Adicionar
+                        </button>
+                    </div>
+                </div>
+                }
+                }
+            </div>
+            }
+        </div>
+    </section>
+    }
 
     <!-- SEÇÃO: SERVIÇOS -->
     <section class="option-panel-container">
@@ -54,7 +117,7 @@
         </div>
 
         <div class="option-panel-body">
-            <a href="/solicitacao" class="option-card">
+            <a routerLink="/solicitacao" class="option-card">
                 <div class="option-card-icon">
                     <img src="/assets/img/dashboard/icon-card-add.svg" alt="Adquirir Cartão">
                 </div>
@@ -63,7 +126,7 @@
                 </div>
             </a>
 
-            <a href="/recarga" class="option-card">
+            <a routerLink="/recarga" class="option-card">
                 <div class="option-card-icon">
                     <img src="/assets/img/dashboard/icon-recharge.svg" alt="Recarregar Cartão">
                 </div>
@@ -72,7 +135,7 @@
                 </div>
             </a>
 
-            <a href="/bloqueio" class="option-card">
+            <a routerLink="/bloqueio" class="option-card">
                 <div class="option-card-icon">
                     <img src="/assets/img/dashboard/icon-card-block.svg" alt="Bloquear Cartão">
                 </div>
@@ -91,22 +154,24 @@
 
         <div class="history-filters">
             <div class="filter">
-                <select name="card_filter" id="card-filter">
-                    <option value="">Selecione o cartão</option>
+                <select name="card_filter" id="card-filter" [(ngModel)]="filtroCardId" (change)="onFiltroCardChange()">
+                    <option value="">Todos os cartões</option>
+                    @for (card of cartoes; track card.id) {
+                    <option [value]="card.id">{{ card.nickname || card.card_code }}</option>
+                    }
                 </select>
             </div>
 
             <div class="filter">
-                <select name="time_filter" id="time-filter">
-                    <option value="">Período</option>
+                <select name="time_filter" id="time-filter" (change)="onFiltroPeriodoChange($event)">
                     <option value="daily">Por dia</option>
-                    <option value="monthly">Por mês</option>
+                    <option value="monthly" selected>Por mês</option>
                     <option value="yearly">Por ano</option>
                 </select>
             </div>
 
             <div class="filter">
-                <select name="transaction_type" id="transaction-type">
+                <select name="transaction_type" id="transaction-type" (change)="onFiltroTipoChange($event)">
                     <option value="all">Todas as transações</option>
                     <option value="recharge">Recargas</option>
                     <option value="spent">Gastos em Ônibus</option>
@@ -115,42 +180,75 @@
         </div>
 
         <div class="history-list">
-            <div class="history-item spent">
-                <div class="history-icon">🚌</div>
+            @if (carregandoTransacoes) {
+            <p class="empty-history">Carregando histórico...</p>
+            } @else if (transacoes.length === 0) {
+            <p class="empty-history">Nenhuma atividade registrada ainda.</p>
+            } @else {
+            @for (t of transacoes; track t.id) {
+            <div class="history-item" [class.recharge]="isRecarga(t.type)">
+                <div class="history-icon">{{ t.icon || '💰' }}</div>
                 <div class="history-info">
-                    <h4>Ônibus - Linha 035 (Centro / Bairro)</h4>
-                    <p>18 de Setembro, 14:20 • Operadora Transporte</p>
+                    <h4>{{ t.title }}</h4>
+                    <p>{{ formatarData(t.date) }}</p>
                 </div>
-                <div class="history-amount negative">- R$ 4,40</div>
-            </div>
-
-            <div class="history-item recharge">
-                <div class="history-icon">💰</div>
-                <div class="history-info">
-                    <h4>Recarga via PIX</h4>
-                    <p>17 de Setembro, 09:15 • Confirmado</p>
+                <div class="history-amount" [class.positive]="isRecarga(t.type)" [class.negative]="!isRecarga(t.type)">
+                    {{ isRecarga(t.type) ? '+' : '-' }} {{ formatarSaldo(t.amount) }}
                 </div>
-                <div class="history-amount positive">+ R$ 50,00</div>
             </div>
-
-            <div class="history-item spent">
-                <div class="history-icon">🚌</div>
-                <div class="history-info">
-                    <h4>Ônibus - Linha 112 (Integração)</h4>
-                    <p>16 de Setembro, 18:45 • Operadora Transporte</p>
-                </div>
-                <div class="history-amount negative">- R$ 4,40</div>
-            </div>
-
-            <div class="history-item spent">
-                <div class="history-icon">🚌</div>
-                <div class="history-info">
-                    <h4>Ônibus - Linha 035 (Centro / Bairro)</h4>
-                    <p>16 de Setembro, 07:30 • Operadora Transporte</p>
-                </div>
-                <div class="history-amount negative">- R$ 4,40</div>
-            </div>
+            }
+            }
         </div>
     </section>
 
 </main>
+
+<!-- MODAL: ADICIONAR CARTÃO -->
+@if (modalAberto) {
+<div class="modal-overlay" (click)="fecharModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+            <h3>Adicionar Cartão</h3>
+            <button type="button" class="close-btn" (click)="fecharModal()">×</button>
+        </div>
+
+        <div class="modal-body">
+            <p class="modal-hint">
+                Digite o código do cartão que você recebeu da operadora.
+                Ele está impresso na parte de trás do cartão físico.
+            </p>
+
+            <form [formGroup]="addCardForm" (ngSubmit)="onSubmitAddCard()">
+                <div class="field">
+                    <label for="card_code">Código do Cartão</label>
+                    <input id="card_code" type="text" placeholder="Ex: 48210001" formControlName="card_code"
+                        autocomplete="off">
+                </div>
+
+                <div class="field">
+                    <label for="nickname">Apelido (opcional)</label>
+                    <input id="nickname" type="text" placeholder="Ex: Meu cartão do dia a dia"
+                        formControlName="nickname">
+                </div>
+
+                @if (erro) {
+                <div class="modal-alert modal-alert-error">{{ erro }}</div>
+                }
+
+                @if (sucesso) {
+                <div class="modal-alert modal-alert-success">{{ sucesso }}</div>
+                }
+
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" (click)="fecharModal()">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="btn-primary" [disabled]="salvando">
+                        {{ salvando ? 'Vinculando...' : 'Vincular Cartão' }}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+}

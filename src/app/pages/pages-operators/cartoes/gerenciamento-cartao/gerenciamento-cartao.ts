@@ -58,7 +58,6 @@ export class GerenciamentoCartao implements OnInit {
 
     // ─── Helpers ───
 
-    /** Pega o nome da operadora do usuário logado (Opção C). */
     private getOperatorName(): string {
         const user = this.authService.currentUserSnapshot;
         return user?.type === 'operator' ? user.company_name : '';
@@ -106,7 +105,7 @@ export class GerenciamentoCartao implements OnInit {
         });
     }
 
-    // ─── IMPORTAR CSV ───
+    // IMPORTAR CSV
 
     onFileSelected(event: Event) {
         const input = event.target as HTMLInputElement;
@@ -175,15 +174,6 @@ export class GerenciamentoCartao implements OnInit {
 
         reader.readAsText(this.arquivoSelecionado);
     }
-
-    /**
-     * Espera CSV com cabeçalho:
-     * card_code,card_type,passenger_category,nickname
-     *
-     * Exemplo:
-     * 48210001,physical,comum,Lote 001
-     * 48210002,physical,estudante,
-     */
     private parseCsv(texto: string): CreateCardPayload[] {
         const linhas = texto
             .split(/\r?\n/)

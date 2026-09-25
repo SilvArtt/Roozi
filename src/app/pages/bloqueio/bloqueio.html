@@ -1,104 +1,134 @@
 <app-header-app></app-header-app>
 
 <main class="bloqueio-main">
-    <form class="bloqueio-form" [formGroup]="bloqueioForm" (ngSubmit)="onSubmit()">
-        <section class="bloqueio-section">
-            <div class="bloqueio-container">
+    <div class="bloqueio-wrapper">
 
+        <!-- Info -->
+        <section class="info-section">
+            <div class="info-container">
                 <div class="card">
                     <div class="card-head">
-                        <h2>Solicitação de Bloqueio</h2>
+                        <h2>Informações</h2>
                     </div>
-
                     <div class="card-body">
-
-                        <div class="field">
-                            <label for="card_code">Código do Cartão</label>
-                            <input id="card_code" type="text"
-                                placeholder="Digite o número do cartão"
-                                autocomplete="off"
-                                formControlName="card_code">
-                        </div>
-
-                        <div class="field">
-                            <label for="holder_name">Nome Completo</label>
-                            <input id="holder_name" type="text"
-                                placeholder="Digite seu nome completo"
-                                autocomplete="name"
-                                formControlName="holder_name">
-                        </div>
-
-                        <div class="field">
-                            <label for="card_type">Tipo do Cartão</label>
-                            <select id="card_type" formControlName="card_type">
-                                <option value="" disabled>Selecione o tipo do seu cartão</option>
-                                <option value="physical">Cartão Físico</option>
-                                <option value="physical_avulso">Cartão Físico (Avulso)</option>
-                                <option value="virtual">Cartão Virtual</option>
-                            </select>
-                        </div>
-
-                        <div class="field">
-                            <label for="has_cpf">CPF Vinculado</label>
-                            <select id="has_cpf" formControlName="has_cpf">
-                                <option value="" disabled>Possui CPF Vinculado?</option>
-                                <option value="true">Sim</option>
-                                <option value="false">Não</option>
-                            </select>
-
-                            @if (bloqueioForm.get('has_cpf')?.value === 'true') {
-                                <input type="text"
-                                    id="cpf"
-                                    placeholder="000.000.000-00"
-                                    maxlength="14"
-                                    inputmode="numeric"
-                                    formControlName="cpf">
-                            }
-                        </div>
-
-                        <div class="field">
-                            <label for="block_reason">Motivo do Bloqueio</label>
-                            <select id="block_reason" formControlName="block_reason">
-                                <option value="" disabled>Selecione o motivo do bloqueio</option>
-                                <option value="loss">Perda ou extravio</option>
-                                <option value="theft">Furto</option>
-                                <option value="robbery">Roubo</option>
-                                <option value="unauthorized_use">Uso não autorizado</option>
-                                <option value="damaged_card">Cartão danificado</option>
-                                <option value="card_not_working">Cartão não funciona</option>
-                                <option value="second_copy">Segunda via</option>
-                                <option value="benefit_cancellation">Cancelamento de benefício</option>
-                                <option value="registration_change">Alteração cadastral</option>
-                                <option value="fraud">Fraude</option>
-                                <option value="expired_card">Cartão vencido</option>
-                                <option value="other">Outro motivo</option>
-                            </select>
-
-                            @if (bloqueioForm.get('block_reason')?.value === 'other') {
-                                <input type="text"
-                                    id="other_reason"
-                                    placeholder="Informe o motivo específico"
-                                    formControlName="other_reason">
-                            }
-                        </div>
-
-                    </div>
-
-                    <div class="card-footer">
-                        <div class="checkbox">
-                            <input type="checkbox" id="confirm_block" formControlName="confirm_block">
-                            <label for="confirm_block">
-                                Estou ciente de que esta ação irá bloquear permanentemente o uso deste cartão.
-                            </label>
-                        </div>
-
-                        <button type="submit" class="btn-primary" [disabled]="loading">
-                            {{ loading ? 'Enviando...' : 'Solicitar Bloqueio' }}
-                        </button>
+                        <h3>Como funciona</h3>
+                        <p>
+                            Informe o <strong>código do cartão</strong> (disponível na
+                            parte de trás) e o <strong>nome do titular</strong> como está
+                            cadastrado.
+                        </p>
+                        <p>
+                            Selecione o <strong>motivo do bloqueio</strong>. Casos de
+                            <strong>perda, furto ou roubo</strong> são tratados com
+                            prioridade — o cartão é bloqueado imediatamente após a
+                            aprovação da operadora.
+                        </p>
+                        <p>
+                            <strong>Atenção:</strong> o bloqueio é <strong>permanente</strong>.
+                            Pra voltar a usar o transporte, você precisará solicitar uma
+                            segunda via.
+                        </p>
                     </div>
                 </div>
-
             </div>
         </section>
-    </form>
+
+        <!-- Form -->
+        <form class="bloqueio-form" [formGroup]="bloqueioForm" (ngSubmit)="onSubmit()">
+            <section class="bloqueio-section">
+                <div class="bloqueio-container">
+                    <div class="card">
+                        <div class="card-head">
+                            <h2>Solicitação de Bloqueio</h2>
+                        </div>
+
+                        <div class="card-body">
+
+                            <div class="field">
+                                <label for="card_code">Código do Cartão</label>
+                                <input id="card_code" type="text" placeholder="Digite o número do cartão"
+                                    autocomplete="off" formControlName="card_code">
+                            </div>
+
+                            <div class="field">
+                                <label for="holder_name">Nome Completo</label>
+                                <input id="holder_name" type="text" placeholder="Digite seu nome completo"
+                                    autocomplete="name" formControlName="holder_name">
+                            </div>
+
+                            <div class="field">
+                                <label for="card_type">Tipo do Cartão</label>
+                                <select id="card_type" formControlName="card_type">
+                                    <option value="" disabled>Selecione o tipo do seu cartão</option>
+                                    <option value="physical">Cartão Físico</option>
+                                    <option value="physical_avulso">Cartão Físico (Avulso)</option>
+                                    <option value="virtual">Cartão Virtual</option>
+                                </select>
+                            </div>
+
+                            <div class="field">
+                                <label for="has_cpf">CPF Vinculado</label>
+                                <select id="has_cpf" formControlName="has_cpf">
+                                    <option value="" disabled>Possui CPF Vinculado?</option>
+                                    <option value="true">Sim</option>
+                                    <option value="false">Não</option>
+                                </select>
+
+                                @if (bloqueioForm.get('has_cpf')?.value === 'true') {
+                                <input type="text" id="cpf" placeholder="000.000.000-00" maxlength="14"
+                                    inputmode="numeric" formControlName="cpf">
+                                }
+                            </div>
+
+                            <div class="field">
+                                <label for="block_reason">Motivo do Bloqueio</label>
+                                <select id="block_reason" formControlName="block_reason">
+                                    <option value="" disabled>Selecione o motivo do bloqueio</option>
+                                    <option value="loss">Perda ou extravio</option>
+                                    <option value="theft">Furto</option>
+                                    <option value="robbery">Roubo</option>
+                                    <option value="unauthorized_use">Uso não autorizado</option>
+                                    <option value="damaged_card">Cartão danificado</option>
+                                    <option value="card_not_working">Cartão não funciona</option>
+                                    <option value="second_copy">Segunda via</option>
+                                    <option value="benefit_cancellation">Cancelamento de benefício</option>
+                                    <option value="registration_change">Alteração cadastral</option>
+                                    <option value="fraud">Fraude</option>
+                                    <option value="expired_card">Cartão vencido</option>
+                                    <option value="other">Outro motivo</option>
+                                </select>
+
+                                @if (bloqueioForm.get('block_reason')?.value === 'other') {
+                                <input type="text" id="other_reason" placeholder="Informe o motivo específico"
+                                    formControlName="other_reason">
+                                }
+                            </div>
+
+                        </div>
+
+                        <div class="card-footer">
+                            @if (erro) {
+                               <div class="alert alert-error">{{ erro }}</div>
+                            }
+                            @if (sucesso) {
+                               <div class="alert alert-success">{{ sucesso }}</div>
+                            }
+
+                            <div class="checkbox">
+                                <input type="checkbox" id="confirm_block" formControlName="confirm_block">
+                                <label for="confirm_block">
+                                    Estou ciente de que esta ação irá bloquear permanentemente o uso deste cartão.
+                                </label>
+                            </div>
+
+                            <button type="submit" class="btn-primary" [disabled]="loading">
+                                {{ loading ? 'Enviando...' : 'Solicitar Bloqueio' }}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </form>
+
+    </div>
 </main>

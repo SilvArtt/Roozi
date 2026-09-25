@@ -1,6 +1,6 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://api.roozi.com/api',  // URL real quando subir
+  apiUrl: 'https://api.roozi.com/api', 
   firebase: {
      apiKey: "AIzaSyCUYDaaBir6N6zP08EBspqGE6GCiS0abqc",
         authDomain: "roozi-8f8f9.firebaseapp.com",

@@ -18,7 +18,7 @@ header {
     height: 70px;
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    gap: 16px;
     position: relative;
 }
 
@@ -28,6 +28,7 @@ header {
     gap: 10px;
     text-decoration: none;
     color: inherit;
+    flex-shrink: 0;
 }
 
 .logo img {
@@ -45,6 +46,32 @@ header {
     line-height: 1;
 }
 
+/* ⭐ ÁREA DO USUÁRIO */
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.9rem;
+    overflow: hidden;
+    margin-left: auto;  
+    margin-right: 16px;
+}
+
+.user-greeting {
+    color: var(--color-text-muted);
+    font-weight: 400;
+    white-space: nowrap;
+}
+
+.user-name {
+    color: var(--color-primary-600);
+    font-weight: 600;
+    max-width: 220px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
 .menu-toggle-checkbox {
     display: none;
 }
@@ -57,6 +84,7 @@ header {
     height: 20px;
     cursor: pointer;
     z-index: 102;
+    flex-shrink: 0;
 }
 
 .hamburger-btn span {
@@ -68,15 +96,15 @@ header {
     transition: all 0.3s ease;
 }
 
-.menu-toggle-checkbox:checked~.hamburger-btn span:nth-child(1) {
+.menu-toggle-checkbox:checked ~ .hamburger-btn span:nth-child(1) {
     transform: translateY(8px) rotate(45deg);
 }
 
-.menu-toggle-checkbox:checked~.hamburger-btn span:nth-child(2) {
+.menu-toggle-checkbox:checked ~ .hamburger-btn span:nth-child(2) {
     opacity: 0;
 }
 
-.menu-toggle-checkbox:checked~.hamburger-btn span:nth-child(3) {
+.menu-toggle-checkbox:checked ~ .hamburger-btn span:nth-child(3) {
     transform: translateY(-9px) rotate(-45deg);
 }
 
@@ -97,7 +125,7 @@ header {
     z-index: 101;
 }
 
-.menu-toggle-checkbox:checked~.nav-menu {
+.menu-toggle-checkbox:checked ~ .nav-menu {
     opacity: 1;
     visibility: visible;
     transform: translateY(0);
@@ -141,6 +169,12 @@ header {
 
 .btn-logout:hover {
     background-color: var(--color-error-bg) !important;
+}
+
+@media (max-width: 640px) {
+    .user-info {
+        display: none;
+    }
 }
 
 @media (max-width: 576px) {

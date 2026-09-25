@@ -3,13 +3,22 @@ import {
     Firestore,
     collection,
     collectionData,
+    doc,
+    setDoc,
+    addDoc,
     orderBy,
     query,
     where,
 } from '@angular/fire/firestore';
 import { AuthService } from '../auth/auth-service';
-import { Observable, of } from 'rxjs';
-import { TransacaoFilter, TransacaoModel } from '@core/models';
+import { Observable, of, from, map, take } from 'rxjs';
+import {
+    TransacaoFilter,
+    TransacaoModel,
+    tipoTransacao,
+    TimeFilter,
+    TransactionTypeFilter,
+} from '@core/models';
 
 @Injectable({
     providedIn: 'root',
@@ -24,33 +33,35 @@ export class TransactionService {
 
     getMyTransactions(): Observable<TransacaoModel[]> {
         const uid = this.authService.currentFirebaseUser?.uid;
-
         if (!uid) return of([]);
 
         const transactionRef = collection(this.firestore, 'transactions');
-        const transactionQuery = query(transactionRef,
-            where('user_id', '==', uid)
+        const transactionQuery = query(
+            transactionRef,
+            where('user_id', '==', uid),
+            orderBy('date', 'desc')
         );
 
         return collectionData(transactionQuery, {
-            idField: 'id'
+            idField: 'id',
         }) as Observable<TransacaoModel[]>;
     }
 
     getTransactionsByCard(cardId: string): Observable<TransacaoModel[]> {
         const transactionRef = collection(this.firestore, 'transactions');
-        const transactionQuery = query(transactionRef,
-            where('card_id', '==', cardId)
+        const transactionQuery = query(
+            transactionRef,
+            where('card_id', '==', cardId),
+            orderBy('date', 'desc')
         );
 
         return collectionData(transactionQuery, {
-            idField: 'id'
+            idField: 'id',
         }) as Observable<TransacaoModel[]>;
     }
 
     getFilteredTransactions(filter: TransacaoFilter): Observable<TransacaoModel[]> {
         const uid = this.authService.currentFirebaseUser?.uid;
-
         if (!uid) return of([]);
 
         const { startDate, endDate } = this.calculateDateRange(filter.time_filter);
@@ -79,27 +90,52 @@ export class TransactionService {
         );
 
         return collectionData(q, {
-            idField: 'id'
+            idField: 'id',
         }) as Observable<TransacaoModel[]>;
     }
 
-    private calculateDateRange(timeFilter: string): { startDate: Date; endDate: Date } {
+    createRechargeTransaction(
+        userId: string,
+        cardId: string,
+        amount: number,
+        cardLabel: string
+    ): Observable<void> {
+        const newTransaction: Omit<TransacaoModel, 'id'> = {
+            user_id: userId,
+            card_id: cardId,
+            amount,
+            type: tipoTransacao.RECARGA,
+            title: `Recarga em ${cardLabel}`,
+            description: 'Recarga confirmada',
+            date: new Date(),
+            icon: '💰',
+        };
+
+        const transactionRef = collection(this.firestore, 'transactions');
+
+        return from(addDoc(transactionRef, newTransaction)).pipe(
+            take(1),
+            map(() => undefined)
+        );
+    }
+
+    private calculateDateRange(timeFilter: TimeFilter): { startDate: Date; endDate: Date } {
         const now = new Date();
 
         switch (timeFilter) {
-            case 'daily': {
+            case TimeFilter.DIARIO: {
                 const startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
                 const endDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999);
                 return { startDate, endDate };
             }
 
-            case 'monthly': {
+            case TimeFilter.MENSAL: {
                 const startDate = new Date(now.getFullYear(), now.getMonth(), 1, 0, 0, 0, 0);
                 const endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
                 return { startDate, endDate };
             }
 
-            case 'yearly': {
+            case TimeFilter.ANUAL: {
                 const startDate = new Date(now.getFullYear(), 0, 1, 0, 0, 0, 0);
                 const endDate = new Date(now.getFullYear(), 11, 31, 23, 59, 59, 999);
                 return { startDate, endDate };

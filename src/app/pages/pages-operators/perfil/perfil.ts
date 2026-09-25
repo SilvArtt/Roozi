@@ -1,6 +1,7 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { take, forkJoin } from 'rxjs';
 import { HeaderOperadora } from '@shared/componentes/headers/headerOperadora/header-operadora/header-operadora';
 import { AuthService } from '@core/services/auth/auth-service';
 import { OperatorService } from '@core/services/operator/operator-service';
@@ -53,7 +54,6 @@ export class Perfil implements OnInit {
         { valor: PassengerCategory.AVULSO, label: 'Avulso' },
     ];
 
-    // Aba 1: dados da empresa
     dadosForm = this.fb.group({
         company_name: ['', Validators.required],
         manager_name: ['', Validators.required],
@@ -61,7 +61,6 @@ export class Perfil implements OnInit {
         company_phone: ['', Validators.required],
     });
 
-    // Aba 3: sistema de bilhetagem (form separado)
     configForm = this.fb.group({
         billing_system: [''],
     });
@@ -78,7 +77,7 @@ export class Perfil implements OnInit {
     }
 
     carregarPerfil() {
-        this.authService.currentUser$.subscribe((u) => {
+        this.authService.currentUser$.pipe(take(1)).subscribe((u) => {
             if (u && u.type === 'operator') {
                 const op = u as Operator;
                 this.dadosForm.patchValue({
@@ -90,7 +89,7 @@ export class Perfil implements OnInit {
             }
         });
 
-        this.operatorService.getMyOperatorProfile().subscribe({
+        this.operatorService.getMyOperatorProfile().pipe(take(1)).subscribe({
             next: (op) => {
                 if (op) {
                     this.areaIdsSelecionadas = [...op.area_ids];
@@ -110,7 +109,7 @@ export class Perfil implements OnInit {
     }
 
     carregarRegioes() {
-        this.regionService.getActiveRegions().subscribe({
+        this.regionService.getActiveRegions().pipe(take(1)).subscribe({
             next: (regioes) => this.regioes = regioes,
             error: () => this.erro = 'Erro ao carregar regiões.',
         });
@@ -134,19 +133,27 @@ export class Perfil implements OnInit {
         this.erro = '';
         this.sucesso = '';
 
-        this.authService.updateUserProfile(uid, {
-            company_name: this.dadosForm.value.company_name!,
-            manager_name: this.dadosForm.value.manager_name!,
-            cnpj: this.dadosForm.value.cnpj!,
-            company_phone: this.dadosForm.value.company_phone!,
+        // ⭐ Executa as 2 escritas em PARALELO
+        forkJoin({
+            user: this.authService.updateUserProfile(uid, {
+                company_name: this.dadosForm.value.company_name!,
+                manager_name: this.dadosForm.value.manager_name!,
+                cnpj: this.dadosForm.value.cnpj!,
+                company_phone: this.dadosForm.value.company_phone!,
+            }).pipe(take(1)),
+
+            operator: this.operatorService.updateOperatorProfile(uid, {
+                company_name: this.dadosForm.value.company_name!,
+            }).pipe(take(1)),
         }).subscribe({
             next: () => {
                 this.salvando = false;
                 this.sucesso = 'Dados salvos com sucesso!';
             },
-            error: () => {
+            error: (err) => {
                 this.salvando = false;
-                this.erro = 'Erro ao salvar dados.';
+                console.error('Erro ao salvar dados:', err);
+                this.erro = 'Erro ao salvar dados. Tente novamente.';
             },
         });
     }
@@ -172,7 +179,7 @@ export class Perfil implements OnInit {
 
         this.operatorService.updateOperatorProfile(uid, {
             area_ids: this.areaIdsSelecionadas,
-        }).subscribe({
+        }).pipe(take(1)).subscribe({
             next: () => {
                 this.salvando = false;
                 this.sucesso = 'Áreas salvas com sucesso!';
@@ -216,7 +223,7 @@ export class Perfil implements OnInit {
             available_card_types: this.cardTypesSelecionados,
             available_categories: this.categoriesSelecionadas,
             billing_system: this.configForm.value.billing_system ?? '',
-        }).subscribe({
+        }).pipe(take(1)).subscribe({
             next: () => {
                 this.salvando = false;
                 this.sucesso = 'Configurações salvas!';

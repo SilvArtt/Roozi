@@ -38,39 +38,17 @@ export class AuthService {
     private firestore = inject(Firestore);
     private router = inject(Router);
 
-    // ═══════════════════════════════════════════════════════════
-    // ESTADO DO USUÁRIO (cache via BehaviorSubject)
-    // ═══════════════════════════════════════════════════════════
-
     private currentUserSubject = new BehaviorSubject<User | null>(null);
     public currentUser$ = this.currentUserSubject.asObservable();
 
-    /**
-     * Flag para evitar que o onAuthStateChanged sobrescreva o estado
-     * durante um cadastro que ainda está sendo concluído.
-     */
     private isRegistering = false;
 
-    /**
-     * Snapshot síncrono do usuário atual.
-     * Útil pra pegar dados sem precisar de subscribe.
-     */
     get currentUserSnapshot(): User | null {
         return this.currentUserSubject.value;
     }
 
     constructor() {
-        console.log('[Auth] 🔵 Constructor chamado');
-
         onAuthStateChanged(this.auth, async (firebaseUser) => {
-            console.log('[Auth] 🟡 onAuthStateChanged:', {
-                hasFirebaseUser: !!firebaseUser,
-                uid: firebaseUser?.uid ?? 'null',
-                authCurrentUser: this.auth.currentUser?.uid ?? 'null',
-                cachedUid: this.currentUserSubject.value?.id ?? 'null',
-                currentUrl: window.location.pathname,
-            });
-
             if (!firebaseUser) {
                 if (this.auth.currentUser) {
                     console.warn('[Auth] null falso — ignorando');
@@ -108,10 +86,6 @@ export class AuthService {
         return this.auth.currentUser;
     }
 
-    // ═══════════════════════════════════════════════════════════
-    // LOGIN
-    // ═══════════════════════════════════════════════════════════
-
     login(payload: LoginPayload): Observable<User> {
         return from(
             signInWithEmailAndPassword(this.auth, payload.email, payload.password)
@@ -122,7 +96,6 @@ export class AuthService {
             }),
             switchMap((snap) => {
                 if (!snap.exists()) {
-                    // Faz signOut pra não deixar sessão órfã
                     return from(signOut(this.auth)).pipe(
                         switchMap(() => {
                             throw new Error('Perfil do usuário não encontrado no banco.');
@@ -138,10 +111,6 @@ export class AuthService {
         );
     }
 
-    // ═══════════════════════════════════════════════════════════
-    // CADASTRO — PASSAGEIRO
-    // ═══════════════════════════════════════════════════════════
-
     registerPassenger(payload: RegisterPassengerPayload): Observable<User> {
         this.isRegistering = true;
 
@@ -150,7 +119,6 @@ export class AuthService {
         ).pipe(
             switchMap((credential) => {
                 const uid = credential.user.uid;
-
                 return from(
                     updateProfile(credential.user, { displayName: payload.full_name })
                 ).pipe(map(() => uid));
@@ -175,7 +143,6 @@ export class AuthService {
                         const user = { id: uid, ...userDoc } as Passenger;
                         this.currentUserSubject.next(user);
                         this.isRegistering = false;
-
                         return user;
                     })
                 );
@@ -188,10 +155,6 @@ export class AuthService {
         );
     }
 
-    // ═══════════════════════════════════════════════════════════
-    // CADASTRO — OPERADORA
-    // ═══════════════════════════════════════════════════════════
-
     registerOperator(payload: RegisterOperatorPayload): Observable<User> {
         this.isRegistering = true;
 
@@ -200,7 +163,6 @@ export class AuthService {
         ).pipe(
             switchMap((credential) => {
                 const uid = credential.user.uid;
-
                 return from(
                     updateProfile(credential.user, { displayName: payload.company_name })
                 ).pipe(map(() => uid));
@@ -209,7 +171,6 @@ export class AuthService {
                 const userRef = doc(this.firestore, `users/${uid}`);
                 const operatorRef = doc(this.firestore, `operators/${uid}`);
 
-                // Sanitiza TUDO pra garantir que nunca vai undefined
                 const userDoc: Omit<Operator, 'id'> = {
                     type: 'operator',
                     email: payload.email ?? '',
@@ -224,6 +185,7 @@ export class AuthService {
 
                 const operatorDoc: Omit<OperatorCompany, 'id'> = {
                     user_id: uid,
+                    company_name: payload.company_name ?? '',
                     area_ids: payload.area_ids ?? [],
                     available_card_types: payload.available_card_types ?? [],
                     available_categories: payload.available_categories ?? [],
@@ -243,7 +205,6 @@ export class AuthService {
                         const user = { id: uid, ...userDoc } as Operator;
                         this.currentUserSubject.next(user);
                         this.isRegistering = false;
-
                         return user;
                     })
                 );
@@ -256,10 +217,6 @@ export class AuthService {
         );
     }
 
-    // ═══════════════════════════════════════════════════════════
-    // LOGOUT
-    // ═══════════════════════════════════════════════════════════
-
     logout(): Observable<void> {
         return from(signOut(this.auth)).pipe(
             tap(() => {
@@ -269,18 +226,8 @@ export class AuthService {
         );
     }
 
-    // ═══════════════════════════════════════════════════════════
-    // ATUALIZAR PERFIL DO USUÁRIO
-    // ═══════════════════════════════════════════════════════════
-
-    /**
-     * Atualiza o documento `users/{uid}` no Firestore.
-     * Também atualiza o `currentUserSubject` local para refletir
-     * a mudança imediatamente em quem estiver ouvindo `currentUser$`.
-     */
     updateUserProfile(uid: string, data: Partial<User>): Observable<void> {
         const userRef = doc(this.firestore, `users/${uid}`);
-
         const updates = {
             ...data,
             updated_at: new Date(),
@@ -299,21 +246,12 @@ export class AuthService {
         );
     }
 
-    // ═══════════════════════════════════════════════════════════
-    // HELPERS
-    // ═══════════════════════════════════════════════════════════
-
     isLoggedIn(): boolean {
         return this.auth.currentUser !== null;
     }
 
-    /**
-     * Converte um DocumentSnapshot em User,
-     * convertendo Timestamps do Firestore pra Date do JS.
-     */
     private snapshotToUser(snap: DocumentSnapshot): User {
         const data = snap.data() ?? {};
-
         return {
             id: snap.id,
             ...data,
@@ -322,10 +260,6 @@ export class AuthService {
         } as User;
     }
 
-    /**
-     * Converte Timestamp do Firestore pra Date do JS.
-     * Se já for Date ou se for null/undefined, retorna como está.
-     */
     private toDate(value: any): Date {
         if (!value) return new Date();
         if (value instanceof Date) return value;

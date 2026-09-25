@@ -9,7 +9,7 @@ import {
     updateDoc,
     query,
     where,
-} from '@angular/fire/firestore';   // ← TUDO de @angular/fire/firestore
+} from '@angular/fire/firestore';  
 import { Observable, from, of, switchMap, map, firstValueFrom, throwError } from 'rxjs';
 
 import { AuthService } from '../auth/auth-service';

@@ -18,7 +18,8 @@ export type OperatorCompanyUpdate = Partial<
         'area_ids' |
         'available_card_types' |
         'available_categories' |
-        'billing_system'
+        'billing_system' |
+        'company_name'
     >
 >;
 
@@ -35,7 +36,6 @@ export class OperatorService {
 
     getOperatorsByRegion(regionId: string): Observable<OperatorCompany[]> {
         const OperatorRef = collection(this.firestore, 'operators');
-
         const OperatorQuery = query(
             OperatorRef,
             where('area_ids', 'array-contains', regionId)
@@ -48,7 +48,6 @@ export class OperatorService {
 
     getOperatorById(id: string): Observable<OperatorCompany | null> {
         const operatorRef = doc(this.firestore, `operators/${id}`);
-
         return docData(operatorRef, {
             idField: 'id'
         }) as Observable<OperatorCompany | null>;
@@ -56,11 +55,9 @@ export class OperatorService {
 
     getMyOperatorProfile(): Observable<OperatorCompany | null> {
         const uid = this.authService.currentFirebaseUser?.uid;
-
         if (!uid) return of(null);
 
         const operatorRef = doc(this.firestore, `operators/${uid}`);
-
         return docData(operatorRef, {
             idField: 'id'
         }) as Observable<OperatorCompany | null>;
@@ -68,12 +65,10 @@ export class OperatorService {
 
     updateOperatorProfile(id: string, data: OperatorCompanyUpdate): Observable<void> {
         const operatorRef = doc(this.firestore, `operators/${id}`);
-
         const update = {
             ...data,
             updated_at: new Date()
         };
-
         return from(updateDoc(operatorRef, update));
     }
 }

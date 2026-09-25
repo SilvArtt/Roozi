@@ -5,6 +5,14 @@
 
         <h2>Pedidos</h2>
 
+        <!-- ⭐ ALERTS -->
+        @if (erro) {
+        <div class="alert alert-error">{{ erro }}</div>
+        }
+        @if (sucesso) {
+        <div class="alert alert-success">{{ sucesso }}</div>
+        }
+
         <!-- Abas -->
         <div class="tabs">
             <button type="button" class="tab" [class.active]="abaAtiva === 'cartao'" (click)="mudarAba('cartao')">
@@ -14,14 +22,6 @@
                 Pedidos de Bloqueio
             </button>
         </div>
-
-        <!-- Feedback -->
-        @if (erro) {
-        <div class="alert alert-error">{{ erro }}</div>
-        }
-        @if (sucesso) {
-        <div class="alert alert-success">{{ sucesso }}</div>
-        }
 
         <!-- ABA 1: PEDIDOS DE CARTÃO -->
         @if (abaAtiva === 'cartao') {
@@ -55,14 +55,17 @@
                     </div>
 
                     <div class="pedido-acoes">
-                        <button type="button" class="btn-acao btn-detalhes" (click)="verDetalhesCartao(pedido)">
+                        <button type="button" class="btn-acao btn-detalhes" [disabled]="processando"
+                            (click)="verDetalhesCartao(pedido)">
                             Ver detalhes
                         </button>
                         @if (pedido.status === 'pending_payment' || pedido.status === 'processing') {
-                        <button type="button" class="btn-acao btn-aprovar" (click)="aprovarCartao(pedido)">
+                        <button type="button" class="btn-acao btn-aprovar" [disabled]="processando"
+                            (click)="aprovarCartao(pedido)">
                             Aprovar
                         </button>
-                        <button type="button" class="btn-acao btn-rejeitar" (click)="rejeitarCartao(pedido)">
+                        <button type="button" class="btn-acao btn-rejeitar" [disabled]="processando"
+                            (click)="rejeitarCartao(pedido)">
                             Rejeitar
                         </button>
                         }
@@ -104,14 +107,17 @@
                     </div>
 
                     <div class="pedido-acoes">
-                        <button type="button" class="btn-acao btn-detalhes" (click)="verDetalhesBloqueio(pedido)">
+                        <button type="button" class="btn-acao btn-detalhes" [disabled]="processando"
+                            (click)="verDetalhesBloqueio(pedido)">
                             Ver detalhes
                         </button>
                         @if (pedido.status === 'pending') {
-                        <button type="button" class="btn-acao btn-aprovar" (click)="aprovarBloqueio(pedido)">
+                        <button type="button" class="btn-acao btn-aprovar" [disabled]="processando"
+                            (click)="aprovarBloqueio(pedido)">
                             Aprovar
                         </button>
-                        <button type="button" class="btn-acao btn-rejeitar" (click)="rejeitarBloqueio(pedido)">
+                        <button type="button" class="btn-acao btn-rejeitar" [disabled]="processando"
+                            (click)="rejeitarBloqueio(pedido)">
                             Rejeitar
                         </button>
                         }

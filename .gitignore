@@ -28,8 +28,8 @@ yarn-error.log
 !.vscode/extensions.json
 .history/*
 
-# Miscellaneous
-/.angular/cache
+# Angular
+/.angular
 .sass-cache/
 /connect.lock
 /coverage
@@ -37,6 +37,19 @@ yarn-error.log
 testem.log
 /typings
 __screenshots__/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# Environment local
+.env
+.env.local
+
+# Vercel
+.vercel
 
 # System files
 .DS_Store

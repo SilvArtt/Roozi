@@ -1,20 +1,30 @@
 import { Component, inject } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
+import { take } from 'rxjs';
 import { HeaderApp } from '../../shared/componentes/headers/header-app/header-app';
 import { BlockRequestService } from '@core/services/blockRequest/block-request-service';
-import { BlockReason, BlockRequestModel, CardType } from '@core/models';
+import {
+  BlockReason,
+  BlockRequestModel,
+  CardType,
+} from '@core/models';
 
 @Component({
   selector: 'app-bloqueio',
-  imports: [ReactiveFormsModule, HeaderApp],
+  imports: [ReactiveFormsModule, CommonModule, HeaderApp],
   templateUrl: './bloqueio.html',
   styleUrl: './bloqueio.css',
 })
 export class Bloqueio {
   private fb = inject(FormBuilder);
   private blockRequestService = inject(BlockRequestService);
+  private router = inject(Router);
 
   loading = false;
+  erro = '';
+  sucesso = '';
 
   bloqueioForm = this.fb.group({
     card_code: ['', Validators.required],
@@ -28,6 +38,14 @@ export class Bloqueio {
   });
 
   onSubmit() {
+    if (this.loading) {
+      console.warn('[Bloqueio] Clique ignorado — já processando');
+      return;
+    }
+
+    this.erro = '';
+    this.sucesso = '';
+
     if (this.bloqueioForm.invalid) {
       this.bloqueioForm.markAllAsTouched();
       return;
@@ -48,15 +66,23 @@ export class Bloqueio {
       confirm_block: formValue.confirm_block!,
     };
 
-    this.blockRequestService.createBlockRequest(payload).subscribe({
+    this.blockRequestService.createBlockRequest(payload).pipe(
+      take(1)
+    ).subscribe({
       next: (req: BlockRequestModel) => {
         this.loading = false;
-        console.log('Bloqueio solicitado:', req);
-        this.bloqueioForm.reset();
+        this.sucesso = 'Bloqueio solicitado! A operadora vai analisar em breve.';
+
+        setTimeout(() => {
+          this.router.navigate(['/dashboard'], {
+            queryParams: { bloqueio: 'sucesso' },
+          });
+        }, 1500);
       },
       error: (err: any) => {
         this.loading = false;
-        console.error('Erro no bloqueio:', err);
+        console.error('[Bloqueio] Erro:', err);
+        this.erro = err?.message ?? 'Erro ao solicitar bloqueio. Tente novamente.';
       },
     });
   }

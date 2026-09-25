@@ -6,6 +6,11 @@
     display: block;
     min-height: 100vh;
     background-color: var(--color-bg-main);
+    background-image: url('/assets/img/base/page-bg-base.svg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
 }
 
 /* --------------------------------------------------------------------------
@@ -13,26 +18,54 @@
    -------------------------------------------------------------------------- */
 
 .bloqueio-main {
-    padding: 40px 20px;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: clamp(1.5rem, 4vw, 3rem) 1.25rem 4rem;
+}
+
+.bloqueio-wrapper {
     display: flex;
-    justify-content: center;
+    align-items: flex-start;
+    gap: 1.5rem;
+}
+
+.info-section {
+    flex: 0 0 300px;
+}
+
+.info-container {
+    position: sticky;
+    top: 90px;
 }
 
 .bloqueio-form {
+    flex: 1;
+    min-width: 0;
     display: flex;
-    justify-content: center;
-    width: 100%;
 }
 
 .bloqueio-section {
-    width: 100%;
-    display: flex;
-    justify-content: center;
+    flex: 1;
+    min-width: 0;
 }
 
 .bloqueio-container {
     width: 100%;
-    max-width: 560px;
+}
+
+@media (max-width: 800px) {
+    .bloqueio-wrapper {
+        flex-direction: column;
+    }
+
+    .info-section {
+        flex-basis: auto;
+        width: 100%;
+    }
+
+    .info-container {
+        position: static;
+    }
 }
 
 /* --------------------------------------------------------------------------
@@ -42,38 +75,55 @@
 .card {
     background-color: var(--color-bg-surface);
     border: 1px solid var(--color-border);
-    border-radius: 16px;
+    border-radius: 20px;
     box-shadow: var(--shadow-md);
     overflow: hidden;
 }
 
 .card-head {
-    padding: 28px 32px 20px;
-    border-bottom: 1px solid var(--color-border);
+    padding: 1.75rem 2rem 0;
 }
 
 .card-head h2 {
-    font-size: var(--fs-2xl);
-    font-weight: var(--fw-bold);
-    text-align: center;
-    color: var(--color-text-main);
+    font-size: var(--fs-xl);
+    margin-bottom: 0.25rem;
+}
+
+/* Card de info */
+.info-container .card-body {
+    padding: 1.25rem 2rem 1.75rem;
+}
+
+.info-container h3 {
+    font-size: var(--fs-base);
+    color: var(--color-primary-600);
+    margin-bottom: 0.5rem;
+}
+
+.info-container p {
+    font-size: var(--fs-sm);
+    color: var(--color-text-muted);
     margin-bottom: 0;
 }
 
-.card-body {
-    padding: 32px;
+.info-container p + p {
+    margin-top: 0.75rem;
+}
+
+/* Card do form */
+.form-container .card-body,
+.bloqueio-container .card-body {
+    padding: 1.5rem 2rem 0.5rem;
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 1.1rem;
 }
 
 .card-footer {
-    padding: 24px 32px 32px;
-    background-color: var(--color-bg-subtle);
-    border-top: 1px solid var(--color-border);
+    padding: 1.5rem 2rem 2rem;
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 1.1rem;
 }
 
 /* --------------------------------------------------------------------------
@@ -83,7 +133,7 @@
 .field {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 0.4rem;
 }
 
 .field label {
@@ -95,26 +145,29 @@
 .field input,
 .field select {
     width: 100%;
-    padding: 12px 16px;
-    border: 1px solid var(--color-border);
-    border-radius: 8px;
+    padding: 0.8rem 1rem;
     font-family: var(--font-sans);
     font-size: var(--fs-base);
-    background-color: var(--color-bg-surface);
     color: var(--color-text-main);
-    outline: none;
+    background-color: var(--color-bg-main);
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.field input::placeholder {
+    color: var(--color-text-subtle);
 }
 
 .field input:focus,
 .field select:focus {
+    outline: none;
     border-color: var(--color-primary-500);
-    box-shadow: 0 0 0 3px rgba(211, 162, 43, 0.15);
+    box-shadow: 0 0 0 3px rgba(211, 162, 43, 0.18);
 }
 
-.field>div input,
 .field input + input {
-    margin-top: 8px;
+    margin-top: 0.5rem;
 }
 
 /* --------------------------------------------------------------------------
@@ -124,20 +177,23 @@
 .checkbox {
     display: flex;
     align-items: flex-start;
-    gap: 10px;
+    gap: 0.65rem;
 }
 
 .checkbox input[type="checkbox"] {
     width: 18px;
     height: 18px;
-    margin-top: 2px;
+    min-width: 18px;
+    margin-top: 0.15rem;
     accent-color: var(--color-primary-500);
     cursor: pointer;
 }
 
 .checkbox label {
-    font-size: var(--fs-sm);
+    font-size: var(--fs-xs);
+    font-weight: var(--fw-light);
     color: var(--color-text-muted);
+    line-height: 1.5;
     cursor: pointer;
 }
 
@@ -148,27 +204,26 @@
 .btn-primary {
     display: block;
     width: 100%;
-    padding: 14px 20px;
+    padding: 0.85rem 1.5rem;
     background-color: var(--color-primary-500);
     color: var(--color-primary-900);
     border: none;
-    border-radius: 8px;
+    border-radius: 10px;
     font-family: var(--font-sans);
-    font-size: var(--fs-base);
+    font-size: var(--fs-sm);
     font-weight: var(--fw-semibold);
     letter-spacing: var(--ls-wide);
+    line-height: 1;
     cursor: pointer;
-    transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+    box-shadow: var(--shadow-sm);
+    transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
 }
 
 .btn-primary:hover:not(:disabled) {
     background-color: var(--color-primary-600);
-    color: #FFFFFF;
-    box-shadow: var(--shadow-md);
-}
-
-.btn-primary:active:not(:disabled) {
-    transform: translateY(1px);
+    color: var(--color-text-inverse);
+    box-shadow: var(--shadow-amber);
+    transform: translateY(-1px);
 }
 
 .btn-primary:disabled {
@@ -181,34 +236,53 @@
     outline-offset: 2px;
 }
 
+/* Alertas */
+.alert {
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: var(--fs-sm);
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.alert-error {
+    background-color: var(--color-error-bg);
+    color: var(--color-error-main);
+    border: 1px solid var(--color-error-main);
+}
+
+.alert-success {
+    background-color: var(--color-success-bg);
+    color: var(--color-success-main);
+    border: 1px solid var(--color-success-main);
+}
+
 /* --------------------------------------------------------------------------
    6. RESPONSIVO
    -------------------------------------------------------------------------- */
 
-@media (max-width: 576px) {
-    .bloqueio-main {
-        padding: 20px 12px;
-    }
-
+@media (max-width: 560px) {
     .card-head {
-        padding: 20px 20px 16px;
+        padding: 1.5rem 1.5rem 0;
     }
 
-    .card-body {
-        padding: 20px;
-        gap: 16px;
+    .bloqueio-container .card-body {
+        padding: 1.25rem 1.5rem 0.5rem;
+    }
+
+    .info-container .card-body {
+        padding: 1rem 1.5rem 1.5rem;
     }
 
     .card-footer {
-        padding: 20px;
+        padding: 1.25rem 1.5rem 1.5rem;
     }
 }
 
 @media (prefers-reduced-motion: reduce) {
-
     .field input,
     .field select,
     .btn-primary {
         transition: none;
     }
-} 
+}

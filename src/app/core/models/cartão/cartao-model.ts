@@ -13,6 +13,9 @@ export interface CartaoModel {
   card_type: CardType;
   card_status: CardStatus;
   balance: number;
+  frozen_balance?: number;     
+  blocked_at?: Date;      
+  transferred_to?: string;
 
   passenger_category: PassengerCategory;
 

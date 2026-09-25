@@ -1,5 +1,6 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { take } from 'rxjs';
 import { HeaderOperadora } from '@shared/componentes/headers/headerOperadora/header-operadora/header-operadora';
 import { OperatorRequestService } from '@core/services/operatorRequest/operator-request-service';
 import {
@@ -28,6 +29,7 @@ export class GerenciadorPedidos implements OnInit {
 
     erro = '';
     sucesso = '';
+    processando = false;
 
     ngOnInit() {
         this.carregarTudo();
@@ -40,12 +42,12 @@ export class GerenciadorPedidos implements OnInit {
     }
 
     carregarTudo() {
-        this.requestService.getMyCardRequests().subscribe({
+        this.requestService.getMyCardRequests().pipe(take(1)).subscribe({
             next: (pedidos) => this.pedidosCartao = pedidos,
             error: () => this.erro = 'Erro ao carregar pedidos de cartão.',
         });
 
-        this.requestService.getMyBlockRequests().subscribe({
+        this.requestService.getMyBlockRequests().pipe(take(1)).subscribe({
             next: (pedidos) => this.pedidosBloqueio = pedidos,
             error: () => this.erro = 'Erro ao carregar pedidos de bloqueio.',
         });
@@ -61,28 +63,46 @@ export class GerenciadorPedidos implements OnInit {
     }
 
     aprovarCartao(pedido: RequisicaoCartaoModel) {
-        this.requestService.updateCardRequestStatus(pedido.id, DeliveryStatus.PROCESSANDO).subscribe({
-            next: () => {
-                this.sucesso = 'Pedido aprovado.';
+        if (this.processando) return;
+        this.processando = true;
+        this.erro = '';
+        this.sucesso = '';
+
+        this.requestService.approveCardRequest(pedido).pipe(take(1)).subscribe({
+            next: (card) => {
+                this.processando = false;
+                this.sucesso = `Pedido aprovado! Cartão ${card.card_code} criado e vinculado ao passageiro.`;
                 this.carregarTudo();
             },
-            error: () => this.erro = 'Erro ao aprovar pedido.',
+            error: (err) => {
+                this.processando = false;
+                console.error('Erro ao aprovar pedido:', err);
+                this.erro = err?.message ?? 'Erro ao aprovar pedido.';
+            },
         });
     }
 
     rejeitarCartao(pedido: RequisicaoCartaoModel) {
-        this.requestService.updateCardRequestStatus(pedido.id, DeliveryStatus.CANCELADO).subscribe({
+        if (this.processando) return;
+        this.processando = true;
+        this.erro = '';
+        this.sucesso = '';
+
+        this.requestService.updateCardRequestStatus(pedido.id, DeliveryStatus.CANCELADO).pipe(take(1)).subscribe({
             next: () => {
+                this.processando = false;
                 this.sucesso = 'Pedido rejeitado.';
                 this.carregarTudo();
             },
-            error: () => this.erro = 'Erro ao rejeitar pedido.',
+            error: () => {
+                this.processando = false;
+                this.erro = 'Erro ao rejeitar pedido.';
+            },
         });
     }
 
     verDetalhesCartao(pedido: RequisicaoCartaoModel) {
         console.log('Detalhes do pedido:', pedido);
-        // TODO: abrir modal com detalhes
     }
 
     formatarEntrega(pedido: RequisicaoCartaoModel): string {
@@ -110,28 +130,46 @@ export class GerenciadorPedidos implements OnInit {
     }
 
     aprovarBloqueio(pedido: BlockRequestModel) {
-        this.requestService.updateBlockRequestStatus(pedido.id, BlockStatus.APROVADO).subscribe({
+        if (this.processando) return;
+        this.processando = true;
+        this.erro = '';
+        this.sucesso = '';
+
+        this.requestService.approveBlockRequest(pedido).pipe(take(1)).subscribe({
             next: () => {
-                this.sucesso = 'Bloqueio aprovado. Cartão bloqueado.';
+                this.processando = false;
+                this.sucesso = 'Bloqueio aprovado. Saldo do cartão congelado.';
                 this.carregarTudo();
             },
-            error: () => this.erro = 'Erro ao aprovar bloqueio.',
+            error: (err) => {
+                this.processando = false;
+                console.error('Erro ao aprovar bloqueio:', err);
+                this.erro = err?.message ?? 'Erro ao aprovar bloqueio.';
+            },
         });
     }
 
     rejeitarBloqueio(pedido: BlockRequestModel) {
-        this.requestService.updateBlockRequestStatus(pedido.id, BlockStatus.REJEITADO).subscribe({
+        if (this.processando) return;
+        this.processando = true;
+        this.erro = '';
+        this.sucesso = '';
+
+        this.requestService.rejectBlockRequest(pedido.id).pipe(take(1)).subscribe({
             next: () => {
+                this.processando = false;
                 this.sucesso = 'Bloqueio rejeitado.';
                 this.carregarTudo();
             },
-            error: () => this.erro = 'Erro ao rejeitar bloqueio.',
+            error: () => {
+                this.processando = false;
+                this.erro = 'Erro ao rejeitar bloqueio.';
+            },
         });
     }
 
     verDetalhesBloqueio(pedido: BlockRequestModel) {
         console.log('Detalhes do bloqueio:', pedido);
-        // TODO: abrir modal com detalhes
     }
 
     formatarMotivo(motivo: BlockReason): string {

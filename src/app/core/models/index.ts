@@ -21,3 +21,4 @@ export * from './usuarios/tipoUsuario/userTypes';
 export * from './usuarios/usuarioModel';
 export * from './ServiçosModel/recarga/recargaStatus';
 export * from './cepModel';
+export * from './cartão/RequisicaoCartao/cardRequest';
