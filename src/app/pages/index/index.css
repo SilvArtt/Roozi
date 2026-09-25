@@ -267,6 +267,85 @@ main section {
     outline-offset: 3px;
 }
 
+/* ═══════════════════════════════════════════════════════════
+   METODOLOGIA — FORÇA O ESTILO ESCURO
+   ═══════════════════════════════════════════════════════════ */
+
+section#met {
+    background-color: var(--color-secondary-700) !important;
+    padding: clamp(2.5rem, 6vw, 5rem) clamp(1.25rem, 5vw, 4rem) !important;
+}
+
+section#met h2 {
+    color: var(--color-text-inverse) !important;
+    text-align: center;
+    margin-bottom: 2.5rem;
+}
+
+section#met .card {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 380px));
+    justify-content: center;
+    gap: 1.75rem;
+    counter-reset: passo;
+    background: transparent !important;
+}
+
+section#met .card-block {
+    position: relative;
+    padding: 2.5rem 1.75rem 2rem;
+    background-color: var(--color-secondary-500) !important;
+    border: 1px solid var(--color-secondary-300) !important;
+    border-radius: 16px;
+    box-shadow: 0 8px 20px rgba(5, 14, 23, 0.35);
+    transition: transform 0.2s ease, border-color 0.2s ease;
+    counter-increment: passo;
+}
+
+section#met .card-block::before {
+    content: counter(passo);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    margin-bottom: 1rem;
+    border-radius: 50%;
+    background-color: var(--color-primary-500) !important;
+    color: var(--color-secondary-900) !important;
+    font-weight: var(--fw-bold);
+    font-size: var(--fs-sm);
+}
+
+section#met .card-block:hover {
+    transform: translateY(-4px);
+    border-color: var(--color-primary-400) !important;
+}
+
+section#met .card-block h3 {
+    color: var(--color-primary-300) !important;
+    margin-bottom: 0.6rem;
+}
+
+section#met .card-block p {
+    font-size: var(--fs-sm);
+    color: var(--color-secondary-50) !important;
+    margin-bottom: 0;
+}
+
+/* Responsivo */
+@media (max-width: 700px) {
+    section#met .card {
+        grid-template-columns: 1fr;
+        max-width: 420px;
+        margin: 0 auto;
+    }
+
+    section#met .card-block {
+        padding: 2rem 1.5rem 1.5rem;
+    }
+}
+
 /* --------------------------------------------------------------------------
    6. RESPONSIVO
    -------------------------------------------------------------------------- */
