@@ -8,7 +8,10 @@
     overflow-x: hidden;
 }
 
-/* 1. HERO */
+/* --------------------------------------------------------------------------
+   1. HERO
+   -------------------------------------------------------------------------- */
+
 .hero {
     background-image: url('/assets/img/index/hero-bg.svg');
     background-size: cover;
@@ -37,7 +40,10 @@
     margin-bottom: 0;
 }
 
-/* 2. SEÇÕES */
+/* --------------------------------------------------------------------------
+   2. SEÇÕES
+   -------------------------------------------------------------------------- */
+
 main section {
     padding: clamp(2.5rem, 6vw, 5rem) clamp(1.25rem, 5vw, 4rem);
 }
@@ -48,7 +54,10 @@ main section {
     margin-bottom: 2.5rem;
 }
 
-/* 3. SOBRE */
+/* --------------------------------------------------------------------------
+   3. SOBRE
+   -------------------------------------------------------------------------- */
+
 .abt-container {
     max-width: 1100px;
     margin: 0 auto;
@@ -101,114 +110,168 @@ main section {
     margin-bottom: 0;
 }
 
-/* 4. OBJETIVOS */
+/* --------------------------------------------------------------------------
+   4. OBJETIVOS — CARROSSEL
+   -------------------------------------------------------------------------- */
+
 .obj-container {
     max-width: 1100px;
     margin: 0 auto;
 }
 
-.obj-container .card {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1.75rem;
+.carousel-wrapper {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    max-width: 820px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 0 2.5rem;
 }
 
-.obj-container .card-block {
-    padding: 2.25rem 1.75rem;
+.carousel-viewport {
+    width: 100%;
+    overflow: hidden;
+    border-radius: 20px;
+    position: relative;
+}
+
+.carousel-track {
+    display: flex;
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.carousel-slide {
+    flex: 0 0 100%;
+    min-width: 100%;
+    box-sizing: border-box;
+}
+
+.carousel-card {
     background-color: var(--color-bg-surface);
     border: 1px solid var(--color-border);
     border-radius: 16px;
     box-shadow: var(--shadow-md);
-    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
-}
-
-.obj-container .card-block:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-amber);
-    border-color: var(--color-primary-300);
-}
-
-.obj-container .card-block h3 {
-    color: var(--color-primary-600);
-    margin-bottom: 0.6rem;
-}
-
-.obj-container .card-block p {
-    font-size: var(--fs-sm);
-    color: var(--color-text-muted);
-    margin-bottom: 0;
-}
-
-/* 5. METODOLOGIA */
-section#met {
-    background-color: var(--color-secondary-700);
-}
-
-.met-container {
-    max-width: 1100px;
-    margin: 0 auto;
-}
-
-.met-container > h2 {
-    color: var(--color-text-inverse);
-}
-
-.met-container .card {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 380px));
+    padding: clamp(2rem, 5vw, 3.5rem) clamp(1.5rem, 4vw, 3rem);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    min-height: 280px;
     justify-content: center;
-    gap: 1.75rem;
-    counter-reset: passo;
 }
 
-.met-container .card-block {
-    position: relative;
-    padding: 2.5rem 1.75rem 2rem;
-    background-color: var(--color-secondary-500);
-    border: 1px solid var(--color-secondary-300);
-    border-radius: 16px;
-    box-shadow: 0 8px 20px rgba(5, 14, 23, 0.35);
-    transition: transform 0.2s ease, border-color 0.2s ease;
-    counter-increment: passo;
+.carousel-icon {
+    font-size: 3.5rem;
+    line-height: 1;
+    margin-bottom: 0.5rem;
 }
 
-.met-container .card-block::before {
-    content: counter(passo);
+.carousel-card h3 {
+    font-size: var(--fs-2xl);
+    font-weight: var(--fw-bold);
+    color: var(--color-primary-600);
+    margin: 0;
+}
+
+.carousel-card p {
+    font-size: var(--fs-base);
+    color: var(--color-text-muted);
+    line-height: 1.6;
+    margin: 0;
+    max-width: 560px;
+}
+
+/* ⭐ Setas sobrepostas */
+.carousel-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background-color: var(--color-bg-surface);
+    border: 1px solid var(--color-border);
+    color: var(--color-text-main);
+    font-size: 1.1rem;
+    cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 34px;
-    height: 34px;
-    margin-bottom: 1rem;
-    border-radius: 50%;
+    box-shadow: var(--shadow-md);
+    transition: background-color 0.2s ease, border-color 0.2s ease,
+        color 0.2s ease, transform 0.2s ease, opacity 0.2s ease;
+}
+
+.carousel-prev {
+    left: -24px;
+}
+
+.carousel-next {
+    right: -24px;
+}
+
+.carousel-nav:hover:not(:disabled) {
     background-color: var(--color-primary-500);
-    color: var(--color-secondary-900);
-    font-family: var(--font-heading);
-    font-weight: var(--fw-bold);
-    font-size: var(--fs-sm);
+    color: var(--color-primary-900);
+    border-color: var(--color-primary-500);
+    transform: translateY(-50%) scale(1.08);
 }
 
-.met-container .card-block:hover {
-    transform: translateY(-4px);
-    border-color: var(--color-primary-400);
+.carousel-nav:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
 }
 
-.met-container .card-block h3 {
-    color: var(--color-primary-300);
-    margin-bottom: 0.6rem;
+.carousel-nav:focus-visible {
+    outline: 2px solid var(--color-primary-500);
+    outline-offset: 2px;
 }
 
-.met-container .card-block p {
-    font-size: var(--fs-sm);
-    color: var(--color-secondary-50);
-    margin-bottom: 0;
+/* Dots */
+.carousel-dots {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.6rem;
+    margin-top: 0.5rem;
 }
 
-/* 6. RESPONSIVO */
+.carousel-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: var(--color-border);
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.carousel-dot:hover {
+    background-color: var(--color-primary-300);
+}
+
+.carousel-dot.active {
+    background-color: var(--color-primary-500);
+    transform: scale(1.3);
+}
+
+.carousel-dot:focus-visible {
+    outline: 2px solid var(--color-primary-500);
+    outline-offset: 3px;
+}
+
+/* --------------------------------------------------------------------------
+   6. RESPONSIVO
+   -------------------------------------------------------------------------- */
+
 @media (max-width: 900px) {
-    .obj-container .card {
-        grid-template-columns: repeat(2, 1fr);
-    }
     .met-container .card {
         grid-template-columns: repeat(2, minmax(0, 320px));
     }
@@ -218,11 +281,42 @@ section#met {
     .abt-container {
         flex-direction: column;
     }
+
     .abt-img-container {
         max-width: 220px;
     }
+
     .abt-container > h2 {
         text-align: center;
+    }
+
+    .carousel-wrapper {
+        grid-template-columns: 44px 1fr 44px;
+        gap: 0.75rem;
+        max-width: 100%;
+    }
+
+    .carousel-nav {
+        width: 40px;
+        height: 40px;
+        font-size: 0.9rem;
+    }
+
+    .carousel-card {
+        min-height: 240px;
+        padding: 2rem 1.25rem;
+    }
+
+    .carousel-icon {
+        font-size: 2.75rem;
+    }
+
+    .carousel-card h3 {
+        font-size: var(--fs-xl);
+    }
+
+    .carousel-card p {
+        font-size: var(--fs-sm);
     }
 }
 
@@ -232,17 +326,9 @@ section#met {
         max-width: 420px;
         margin: 0 auto;
     }
+
     .met-container .card-block {
         padding: 2rem 1.5rem 1.5rem;
-    }
-}
-
-@media (max-width: 600px) {
-    .obj-container .card {
-        grid-template-columns: 1fr;
-    }
-    .obj-container .card-block {
-        padding: 1.75rem 1.5rem;
     }
 }
 
@@ -251,18 +337,52 @@ section#met {
     .img-card {
         padding: 1.25rem;
     }
+
     .abt-img-container {
         max-width: 160px;
     }
+
     .obj-container > h2,
     .met-container > h2 {
         margin-bottom: 1.75rem;
     }
+
+    .carousel-wrapper {
+        grid-template-columns: 36px 1fr 36px;
+        gap: 0.5rem;
+        padding: 0;
+    }
+
+    .carousel-nav {
+        width: 36px;
+        height: 36px;
+        font-size: 0.8rem;
+    }
+
+    .carousel-card {
+        min-height: 220px;
+        padding: 1.5rem 1rem;
+        border-radius: 14px;
+    }
+
+    .carousel-icon {
+        font-size: 2.25rem;
+    }
+
+    .carousel-card h3 {
+        font-size: var(--fs-lg);
+    }
+
+    .carousel-card p {
+        font-size: var(--fs-xs);
+    }
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .obj-container .card-block,
-    .met-container .card-block {
+    .met-container .card-block,
+    .carousel-track,
+    .carousel-nav,
+    .carousel-dot {
         transition: none;
     }
 }

@@ -31,28 +31,47 @@
         </div>
     </section>
 
+    <!-- ⭐ SEÇÃO: OBJETIVOS (CARROSSEL) -->
     <section id="obj">
         <div class="obj-container">
             <h2>Objetivos da Roozi</h2>
 
-            <div class="card">
-                <div class="card-block">
-                    <h3>Praticidade</h3>
-                    <p>Emissão, gerenciamento e bloqueio do seu cartão de passagem em um único lugar, sem precisar
-                        recorrer a múltiplos canais de atendimento.</p>
+            <div class="carousel-wrapper">
+                <!-- Botão anterior (sobreposto) -->
+                <button type="button" class="carousel-nav carousel-prev" [disabled]="currentIndex === 0"
+                    (click)="prev()" aria-label="Slide anterior">
+                    ◀
+                </button>
+
+                <!-- Janela visível -->
+                <div class="carousel-viewport">
+                    <div class="carousel-track" [style.transform]="'translateX(-' + (currentIndex * 100) + '%)'">
+                        @for (objetivo of objetivos; track objetivo.titulo) {
+                        <div class="carousel-slide">
+                            <div class="carousel-card">
+                                <div class="carousel-icon">{{ objetivo.icon }}</div>
+                                <h3>{{ objetivo.titulo }}</h3>
+                                <p>{{ objetivo.descricao }}</p>
+                            </div>
+                        </div>
+                        }
+                    </div>
                 </div>
 
-                <div class="card-block">
-                    <h3>Facilidade</h3>
-                    <p>Recarregue, ative ou bloqueie seu cartão em poucos toques, reduzindo filas presenciais e
-                        resolvendo imprevistos na hora.</p>
-                </div>
+                <!-- Botão próximo (sobreposto) -->
+                <button type="button" class="carousel-nav carousel-next"
+                    [disabled]="currentIndex === objetivos.length - 1" (click)="next()" aria-label="Próximo slide">
+                    ▶
+                </button>
+            </div>
 
-                <div class="card-block">
-                    <h3>Controle</h3>
-                    <p>Acompanhe de forma clara quanto você gasta com transporte por dia, mês e ano, e planeje
-                        melhor o seu orçamento.</p>
-                </div>
+            <!-- Dots indicadores -->
+            <div class="carousel-dots" role="tablist">
+                @for (objetivo of objetivos; track objetivo.titulo; let i = $index) {
+                <button type="button" class="carousel-dot" [class.active]="i === currentIndex" (click)="goTo(i)"
+                    [attr.aria-label]="'Ir para slide ' + (i + 1)" [attr.aria-selected]="i === currentIndex">
+                </button>
+                }
             </div>
         </div>
     </section>
